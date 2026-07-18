@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum StorageLocation {
+  fridge
+  freezer
+  pantry
+}
+
+enum ItemCategory {
+  produce
+  dairy
+  meat
+  seafood
+  frozen
+  grains
+  canned_goods
+  snacks
+  beverages
+  condiments
+  spices
+  baking
+  household
+  leftovers
+  other
+}
+
+enum Unit {
+  count
+  oz
+  lb
+  g
+  kg
+  ml
+  l
+  cup
+  tbsp
+  tsp
+  pint
+  quart
+  gallon
+  package
+  can
+  bottle
+  box
+  bag
+  jar
+}
+
+model KitchenItem {
+  id              String          @id @default(uuid()) @db.Uuid
+  userId          String          @map("user_id") @db.VarChar(255)
+
+  name            String          @db.VarChar(100)
+  category        ItemCategory
+  storageLocation StorageLocation @map("storage_location")
+
+  quantity        Decimal         @default(1) @db.Decimal(10, 2)
+  unit            Unit
+
+  expirationDate  DateTime?       @map("expiration_date") @db.Date
+  notes           String?         @db.VarChar(1000)
+
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([userId])
+  @@index([userId, storageLocation])
+  @@index([userId, expirationDate])
+  @@index([userId, category])
+
+  @@map("kitchen_items")
+}
