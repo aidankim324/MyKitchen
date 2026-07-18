@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { KitchenItem } from "@/types/inventory";
 import {
   ITEM_CATEGORIES,
   STORAGE_LOCATIONS,
@@ -11,9 +12,15 @@ import {
 
 type FieldErrors = Record<string, string[] | undefined>;
 
-type ItemFormProps = {
-  mode: "create";
-};
+type ItemFormProps =
+  | {
+      mode: "create";
+      initialItem?: never;
+    }
+  | {
+      mode: "edit";
+      initialItem: KitchenItem;
+    };
 
 function formatLabel(value: string) {
   return value
@@ -26,7 +33,7 @@ function getFirstError(fieldErrors: FieldErrors, field: string) {
   return fieldErrors[field]?.[0] ?? null;
 }
 
-export function ItemForm({ mode }: ItemFormProps) {
+export function ItemForm({ mode, initialItem }: ItemFormProps) {
   const router = useRouter();
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -34,13 +41,13 @@ export function ItemForm({ mode }: ItemFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formValues, setFormValues] = useState({
-    name: "",
-    category: "other",
-    storageLocation: "fridge",
-    quantity: "1",
-    unit: "count",
-    expirationDate: "",
-    notes: "",
+    name: initialItem?.name ?? "",
+    category: initialItem?.category ?? "other",
+    storageLocation: initialItem?.storageLocation ?? "fridge",
+    quantity: initialItem ? String(initialItem.quantity) : "1",
+    unit: initialItem?.unit ?? "count",
+    expirationDate: initialItem?.expirationDate ?? "",
+    notes: initialItem?.notes ?? "",
   });
 
   function updateField(field: keyof typeof formValues, value: string) {
@@ -68,13 +75,16 @@ export function ItemForm({ mode }: ItemFormProps) {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/items", {
-        method: mode === "create" ? "POST" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(parsed.data),
-      });
+      const response = await fetch(
+        mode === "create" ? "/api/items" : `/api/items/${initialItem.id}`,
+        {
+          method: mode === "create" ? "POST" : "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(parsed.data),
+        }
+      );
 
       const data = await response.json();
 
@@ -268,7 +278,11 @@ export function ItemForm({ mode }: ItemFormProps) {
           disabled={isSubmitting}
           className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
         >
-          {isSubmitting ? "Saving..." : "Add item"}
+          {isSubmitting
+            ? "Saving..."
+            : mode === "create"
+              ? "Add item"
+              : "Save changes"}
         </button>
 
         <button

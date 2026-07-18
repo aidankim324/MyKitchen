@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getExpirationStatus } from "@/lib/dates";
 import type { KitchenItem } from "@/types/inventory";
 
@@ -45,6 +46,15 @@ export function InventoryItemCard({ item }: InventoryItemCardProps) {
           Expiration: {item.expirationDate ?? "No expiration date"}
         </p>
         {item.notes ? <p className="mt-2">Notes: {item.notes}</p> : null}
+      </div>
+
+      <div className="mt-4">
+        <Link
+          href={`/inventory/${item.id}/edit`}
+          className="text-sm font-medium text-gray-700 hover:text-black"
+        >
+          Edit
+        </Link>
       </div>
     </article>
   );
