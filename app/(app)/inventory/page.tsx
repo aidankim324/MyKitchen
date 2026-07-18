@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
-import { InventoryList } from "@/components/inventory/InventoryList";
+import { InventoryBrowser } from "@/components/inventory/InventoryBrowser";
 import { getKitchenItemsForUser } from "@/lib/items/queries";
 
 export default async function InventoryPage() {
@@ -30,7 +30,7 @@ export default async function InventoryPage() {
         </Link>
       </div>
 
-      <InventoryList items={items} />
+      <InventoryBrowser items={items} />
     </main>
   );
 }
