@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DeleteItemButton } from "@/components/inventory/DeleteItemButton";
 import { getExpirationStatus } from "@/lib/dates";
 import type { KitchenItem } from "@/types/inventory";
 
@@ -42,19 +43,19 @@ export function InventoryItemCard({ item }: InventoryItemCardProps) {
         <p>
           Quantity: {item.quantity} {formatLabel(item.unit)}
         </p>
-        <p>
-          Expiration: {item.expirationDate ?? "No expiration date"}
-        </p>
+        <p>Expiration: {item.expirationDate ?? "No expiration date"}</p>
         {item.notes ? <p className="mt-2">Notes: {item.notes}</p> : null}
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 flex gap-4">
         <Link
           href={`/inventory/${item.id}/edit`}
           className="text-sm font-medium text-gray-700 hover:text-black"
         >
           Edit
         </Link>
+
+        <DeleteItemButton itemId={item.id} itemName={item.name} />
       </div>
     </article>
   );
