@@ -93,13 +93,20 @@ export const createKitchenItemSchema = z.object({
     .min(0, "Quantity cannot be negative."),
 
   unit: z.enum(UNITS, {
-    message: "Unit is required.",
-  }),
+  message: "Unit is required.",
+}),
 
-  expirationDate: z.preprocess(
-    emptyStringToNull,
-    dateOnlySchema.nullable().optional()
-  ),
+dateBought: dateOnlySchema,
+
+openedDate: z.preprocess(
+  emptyStringToNull,
+  dateOnlySchema.nullable().optional()
+),
+
+expirationDate: z.preprocess(
+  emptyStringToNull,
+  dateOnlySchema.nullable().optional()
+),
 
   notes: z.preprocess(
     emptyStringToNull,
@@ -133,10 +140,17 @@ export const updateKitchenItemSchema = z
 
     unit: z.enum(UNITS).optional(),
 
-    expirationDate: z.preprocess(
-      emptyStringToNull,
-      dateOnlySchema.nullable().optional()
-    ),
+dateBought: dateOnlySchema.optional(),
+
+openedDate: z.preprocess(
+  emptyStringToNull,
+  dateOnlySchema.nullable().optional()
+),
+
+expirationDate: z.preprocess(
+  emptyStringToNull,
+  dateOnlySchema.nullable().optional()
+),
 
     notes: z.preprocess(
       emptyStringToNull,

@@ -23,6 +23,8 @@ export type KitchenItem = {
   storageLocation: StorageLocation;
   quantity: number;
   unit: Unit;
+  dateBought: string;
+  openedDate: string | null;
   expirationDate: string | null;
   notes: string | null;
   createdAt: string;

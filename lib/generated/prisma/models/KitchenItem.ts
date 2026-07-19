@@ -42,6 +42,8 @@ export type KitchenItemMinAggregateOutputType = {
   storageLocation: $Enums.StorageLocation | null
   quantity: runtime.Decimal | null
   unit: $Enums.Unit | null
+  dateBought: Date | null
+  openedDate: Date | null
   expirationDate: Date | null
   notes: string | null
   createdAt: Date | null
@@ -56,6 +58,8 @@ export type KitchenItemMaxAggregateOutputType = {
   storageLocation: $Enums.StorageLocation | null
   quantity: runtime.Decimal | null
   unit: $Enums.Unit | null
+  dateBought: Date | null
+  openedDate: Date | null
   expirationDate: Date | null
   notes: string | null
   createdAt: Date | null
@@ -70,6 +74,8 @@ export type KitchenItemCountAggregateOutputType = {
   storageLocation: number
   quantity: number
   unit: number
+  dateBought: number
+  openedDate: number
   expirationDate: number
   notes: number
   createdAt: number
@@ -94,6 +100,8 @@ export type KitchenItemMinAggregateInputType = {
   storageLocation?: true
   quantity?: true
   unit?: true
+  dateBought?: true
+  openedDate?: true
   expirationDate?: true
   notes?: true
   createdAt?: true
@@ -108,6 +116,8 @@ export type KitchenItemMaxAggregateInputType = {
   storageLocation?: true
   quantity?: true
   unit?: true
+  dateBought?: true
+  openedDate?: true
   expirationDate?: true
   notes?: true
   createdAt?: true
@@ -122,6 +132,8 @@ export type KitchenItemCountAggregateInputType = {
   storageLocation?: true
   quantity?: true
   unit?: true
+  dateBought?: true
+  openedDate?: true
   expirationDate?: true
   notes?: true
   createdAt?: true
@@ -223,6 +235,8 @@ export type KitchenItemGroupByOutputType = {
   storageLocation: $Enums.StorageLocation
   quantity: runtime.Decimal
   unit: $Enums.Unit
+  dateBought: Date
+  openedDate: Date | null
   expirationDate: Date | null
   notes: string | null
   createdAt: Date
@@ -260,6 +274,8 @@ export type KitchenItemWhereInput = {
   storageLocation?: Prisma.EnumStorageLocationFilter<"KitchenItem"> | $Enums.StorageLocation
   quantity?: Prisma.DecimalFilter<"KitchenItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   unit?: Prisma.EnumUnitFilter<"KitchenItem"> | $Enums.Unit
+  dateBought?: Prisma.DateTimeFilter<"KitchenItem"> | Date | string
+  openedDate?: Prisma.DateTimeNullableFilter<"KitchenItem"> | Date | string | null
   expirationDate?: Prisma.DateTimeNullableFilter<"KitchenItem"> | Date | string | null
   notes?: Prisma.StringNullableFilter<"KitchenItem"> | string | null
   createdAt?: Prisma.DateTimeFilter<"KitchenItem"> | Date | string
@@ -274,6 +290,8 @@ export type KitchenItemOrderByWithRelationInput = {
   storageLocation?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  dateBought?: Prisma.SortOrder
+  openedDate?: Prisma.SortOrderInput | Prisma.SortOrder
   expirationDate?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -291,6 +309,8 @@ export type KitchenItemWhereUniqueInput = Prisma.AtLeast<{
   storageLocation?: Prisma.EnumStorageLocationFilter<"KitchenItem"> | $Enums.StorageLocation
   quantity?: Prisma.DecimalFilter<"KitchenItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   unit?: Prisma.EnumUnitFilter<"KitchenItem"> | $Enums.Unit
+  dateBought?: Prisma.DateTimeFilter<"KitchenItem"> | Date | string
+  openedDate?: Prisma.DateTimeNullableFilter<"KitchenItem"> | Date | string | null
   expirationDate?: Prisma.DateTimeNullableFilter<"KitchenItem"> | Date | string | null
   notes?: Prisma.StringNullableFilter<"KitchenItem"> | string | null
   createdAt?: Prisma.DateTimeFilter<"KitchenItem"> | Date | string
@@ -305,6 +325,8 @@ export type KitchenItemOrderByWithAggregationInput = {
   storageLocation?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  dateBought?: Prisma.SortOrder
+  openedDate?: Prisma.SortOrderInput | Prisma.SortOrder
   expirationDate?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -327,6 +349,8 @@ export type KitchenItemScalarWhereWithAggregatesInput = {
   storageLocation?: Prisma.EnumStorageLocationWithAggregatesFilter<"KitchenItem"> | $Enums.StorageLocation
   quantity?: Prisma.DecimalWithAggregatesFilter<"KitchenItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   unit?: Prisma.EnumUnitWithAggregatesFilter<"KitchenItem"> | $Enums.Unit
+  dateBought?: Prisma.DateTimeWithAggregatesFilter<"KitchenItem"> | Date | string
+  openedDate?: Prisma.DateTimeNullableWithAggregatesFilter<"KitchenItem"> | Date | string | null
   expirationDate?: Prisma.DateTimeNullableWithAggregatesFilter<"KitchenItem"> | Date | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"KitchenItem"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"KitchenItem"> | Date | string
@@ -341,6 +365,8 @@ export type KitchenItemCreateInput = {
   storageLocation: $Enums.StorageLocation
   quantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
   unit: $Enums.Unit
+  dateBought?: Date | string
+  openedDate?: Date | string | null
   expirationDate?: Date | string | null
   notes?: string | null
   createdAt?: Date | string
@@ -355,6 +381,8 @@ export type KitchenItemUncheckedCreateInput = {
   storageLocation: $Enums.StorageLocation
   quantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
   unit: $Enums.Unit
+  dateBought?: Date | string
+  openedDate?: Date | string | null
   expirationDate?: Date | string | null
   notes?: string | null
   createdAt?: Date | string
@@ -369,6 +397,8 @@ export type KitchenItemUpdateInput = {
   storageLocation?: Prisma.EnumStorageLocationFieldUpdateOperationsInput | $Enums.StorageLocation
   quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   unit?: Prisma.EnumUnitFieldUpdateOperationsInput | $Enums.Unit
+  dateBought?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  openedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expirationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -383,6 +413,8 @@ export type KitchenItemUncheckedUpdateInput = {
   storageLocation?: Prisma.EnumStorageLocationFieldUpdateOperationsInput | $Enums.StorageLocation
   quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   unit?: Prisma.EnumUnitFieldUpdateOperationsInput | $Enums.Unit
+  dateBought?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  openedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expirationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -397,6 +429,8 @@ export type KitchenItemCreateManyInput = {
   storageLocation: $Enums.StorageLocation
   quantity?: runtime.Decimal | runtime.DecimalJsLike | number | string
   unit: $Enums.Unit
+  dateBought?: Date | string
+  openedDate?: Date | string | null
   expirationDate?: Date | string | null
   notes?: string | null
   createdAt?: Date | string
@@ -411,6 +445,8 @@ export type KitchenItemUpdateManyMutationInput = {
   storageLocation?: Prisma.EnumStorageLocationFieldUpdateOperationsInput | $Enums.StorageLocation
   quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   unit?: Prisma.EnumUnitFieldUpdateOperationsInput | $Enums.Unit
+  dateBought?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  openedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expirationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -425,6 +461,8 @@ export type KitchenItemUncheckedUpdateManyInput = {
   storageLocation?: Prisma.EnumStorageLocationFieldUpdateOperationsInput | $Enums.StorageLocation
   quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   unit?: Prisma.EnumUnitFieldUpdateOperationsInput | $Enums.Unit
+  dateBought?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  openedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expirationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -439,6 +477,8 @@ export type KitchenItemCountOrderByAggregateInput = {
   storageLocation?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  dateBought?: Prisma.SortOrder
+  openedDate?: Prisma.SortOrder
   expirationDate?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -457,6 +497,8 @@ export type KitchenItemMaxOrderByAggregateInput = {
   storageLocation?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  dateBought?: Prisma.SortOrder
+  openedDate?: Prisma.SortOrder
   expirationDate?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -471,6 +513,8 @@ export type KitchenItemMinOrderByAggregateInput = {
   storageLocation?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  dateBought?: Prisma.SortOrder
+  openedDate?: Prisma.SortOrder
   expirationDate?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -505,16 +549,16 @@ export type EnumUnitFieldUpdateOperationsInput = {
   set?: $Enums.Unit
 }
 
+export type DateTimeFieldUpdateOperationsInput = {
+  set?: Date | string
+}
+
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
-}
-
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
 }
 
 
@@ -527,6 +571,8 @@ export type KitchenItemSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   storageLocation?: boolean
   quantity?: boolean
   unit?: boolean
+  dateBought?: boolean
+  openedDate?: boolean
   expirationDate?: boolean
   notes?: boolean
   createdAt?: boolean
@@ -541,6 +587,8 @@ export type KitchenItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   storageLocation?: boolean
   quantity?: boolean
   unit?: boolean
+  dateBought?: boolean
+  openedDate?: boolean
   expirationDate?: boolean
   notes?: boolean
   createdAt?: boolean
@@ -555,6 +603,8 @@ export type KitchenItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   storageLocation?: boolean
   quantity?: boolean
   unit?: boolean
+  dateBought?: boolean
+  openedDate?: boolean
   expirationDate?: boolean
   notes?: boolean
   createdAt?: boolean
@@ -569,13 +619,15 @@ export type KitchenItemSelectScalar = {
   storageLocation?: boolean
   quantity?: boolean
   unit?: boolean
+  dateBought?: boolean
+  openedDate?: boolean
   expirationDate?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type KitchenItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "category" | "storageLocation" | "quantity" | "unit" | "expirationDate" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["kitchenItem"]>
+export type KitchenItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "category" | "storageLocation" | "quantity" | "unit" | "dateBought" | "openedDate" | "expirationDate" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["kitchenItem"]>
 
 export type $KitchenItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "KitchenItem"
@@ -588,6 +640,8 @@ export type $KitchenItemPayload<ExtArgs extends runtime.Types.Extensions.Interna
     storageLocation: $Enums.StorageLocation
     quantity: runtime.Decimal
     unit: $Enums.Unit
+    dateBought: Date
+    openedDate: Date | null
     expirationDate: Date | null
     notes: string | null
     createdAt: Date
@@ -1022,6 +1076,8 @@ export interface KitchenItemFieldRefs {
   readonly storageLocation: Prisma.FieldRef<"KitchenItem", 'StorageLocation'>
   readonly quantity: Prisma.FieldRef<"KitchenItem", 'Decimal'>
   readonly unit: Prisma.FieldRef<"KitchenItem", 'Unit'>
+  readonly dateBought: Prisma.FieldRef<"KitchenItem", 'DateTime'>
+  readonly openedDate: Prisma.FieldRef<"KitchenItem", 'DateTime'>
   readonly expirationDate: Prisma.FieldRef<"KitchenItem", 'DateTime'>
   readonly notes: Prisma.FieldRef<"KitchenItem", 'String'>
   readonly createdAt: Prisma.FieldRef<"KitchenItem", 'DateTime'>

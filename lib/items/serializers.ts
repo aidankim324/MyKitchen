@@ -10,6 +10,8 @@ export function serializeKitchenItem(item: PrismaKitchenItem): KitchenItem {
     storageLocation: item.storageLocation,
     quantity: Number(item.quantity),
     unit: item.unit,
+    dateBought: prismaDateToDateOnly(item.dateBought) ?? "",
+    openedDate: prismaDateToDateOnly(item.openedDate),
     expirationDate: prismaDateToDateOnly(item.expirationDate),
     notes: item.notes,
     createdAt: item.createdAt.toISOString(),

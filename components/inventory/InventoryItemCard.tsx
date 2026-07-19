@@ -39,14 +39,15 @@ export function InventoryItemCard({ item }: InventoryItemCardProps) {
         </span>
       </div>
 
-      <div className="mt-4 text-sm text-gray-700">
-        <p>
-          Quantity: {item.quantity} {formatLabel(item.unit)}
-        </p>
-        <p>Expiration: {item.expirationDate ?? "No expiration date"}</p>
-        {item.notes ? <p className="mt-2">Notes: {item.notes}</p> : null}
-      </div>
-
+<div className="mt-4 text-sm text-gray-700">
+  <p>
+    Quantity: {item.quantity} {formatLabel(item.unit)}
+  </p>
+  <p>Bought: {item.dateBought}</p>
+  <p>Opened: {item.openedDate ?? "Not opened"}</p>
+  <p>Expiration: {item.expirationDate ?? "No expiration"}</p>
+  {item.notes ? <p className="mt-2">Notes: {item.notes}</p> : null}
+</div>
       <div className="mt-4 flex gap-4">
         <Link
           href={`/inventory/${item.id}/edit`}

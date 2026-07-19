@@ -64,6 +64,8 @@ model KitchenItem {
   quantity        Decimal         @default(1) @db.Decimal(10, 2)
   unit            Unit
 
+  dateBought      DateTime        @default(now()) @map("date_bought") @db.Date
+  openedDate      DateTime?       @map("opened_date") @db.Date
   expirationDate  DateTime?       @map("expiration_date") @db.Date
   notes           String?         @db.VarChar(1000)
 
@@ -72,6 +74,7 @@ model KitchenItem {
 
   @@index([userId])
   @@index([userId, storageLocation])
+  @@index([userId, dateBought])
   @@index([userId, expirationDate])
   @@index([userId, category])
 

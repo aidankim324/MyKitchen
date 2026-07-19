@@ -78,6 +78,8 @@ export const KitchenItemScalarFieldEnum = {
   storageLocation: 'storageLocation',
   quantity: 'quantity',
   unit: 'unit',
+  dateBought: 'dateBought',
+  openedDate: 'openedDate',
   expirationDate: 'expirationDate',
   notes: 'notes',
   createdAt: 'createdAt',

@@ -22,6 +22,15 @@ type ItemFormProps =
       initialItem: KitchenItem;
     };
 
+function getTodayDateOnly() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 function formatLabel(value: string) {
   return value
     .split("_")
@@ -46,8 +55,10 @@ export function ItemForm({ mode, initialItem }: ItemFormProps) {
     storageLocation: initialItem?.storageLocation ?? "fridge",
     quantity: initialItem ? String(initialItem.quantity) : "1",
     unit: initialItem?.unit ?? "count",
-    expirationDate: initialItem?.expirationDate ?? "",
-    notes: initialItem?.notes ?? "",
+dateBought: initialItem?.dateBought ?? getTodayDateOnly(),
+openedDate: initialItem?.openedDate ?? "",
+expirationDate: initialItem?.expirationDate ?? "",
+notes: initialItem?.notes ?? "",
   });
 
   function updateField(field: keyof typeof formValues, value: string) {
@@ -232,27 +243,73 @@ export function ItemForm({ mode, initialItem }: ItemFormProps) {
         </div>
       </div>
 
-      <div>
-        <label htmlFor="expirationDate" className="block text-sm font-medium">
-          Expiration date
-        </label>
-        <input
-          id="expirationDate"
-          name="expirationDate"
-          type="date"
-          value={formValues.expirationDate}
-          onChange={(event) =>
-            updateField("expirationDate", event.target.value)
-          }
-          className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
-        />
-        {getFirstError(fieldErrors, "expirationDate") ? (
-          <p className="mt-1 text-sm text-red-600">
-            {getFirstError(fieldErrors, "expirationDate")}
-          </p>
-        ) : null}
-      </div>
+<section className="rounded-lg border p-4">
+  <h2 className="text-sm font-semibold">Dates</h2>
+  <p className="mt-1 text-sm text-gray-600">
+    Track when you bought, opened, or expect to use this item.
+  </p>
 
+  <div className="mt-4 grid gap-5 md:grid-cols-3">
+    <div>
+      <label htmlFor="dateBought" className="block text-sm font-medium">
+        Date bought
+      </label>
+      <input
+        id="dateBought"
+        name="dateBought"
+        type="date"
+        value={formValues.dateBought}
+        onChange={(event) => updateField("dateBought", event.target.value)}
+        className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+      />
+      {getFirstError(fieldErrors, "dateBought") ? (
+        <p className="mt-1 text-sm text-red-600">
+          {getFirstError(fieldErrors, "dateBought")}
+        </p>
+      ) : null}
+    </div>
+
+    <div>
+      <label htmlFor="openedDate" className="block text-sm font-medium">
+        Opened date
+      </label>
+      <input
+        id="openedDate"
+        name="openedDate"
+        type="date"
+        value={formValues.openedDate}
+        onChange={(event) => updateField("openedDate", event.target.value)}
+        className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+      />
+      {getFirstError(fieldErrors, "openedDate") ? (
+        <p className="mt-1 text-sm text-red-600">
+          {getFirstError(fieldErrors, "openedDate")}
+        </p>
+      ) : null}
+    </div>
+
+    <div>
+      <label htmlFor="expirationDate" className="block text-sm font-medium">
+        Expiration date
+      </label>
+      <input
+        id="expirationDate"
+        name="expirationDate"
+        type="date"
+        value={formValues.expirationDate}
+        onChange={(event) =>
+          updateField("expirationDate", event.target.value)
+        }
+        className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+      />
+      {getFirstError(fieldErrors, "expirationDate") ? (
+        <p className="mt-1 text-sm text-red-600">
+          {getFirstError(fieldErrors, "expirationDate")}
+        </p>
+      ) : null}
+    </div>
+  </div>
+</section>
       <div>
         <label htmlFor="notes" className="block text-sm font-medium">
           Notes

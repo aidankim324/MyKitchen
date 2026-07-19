@@ -59,10 +59,12 @@ export async function createKitchenItemForUser(
       name: input.name,
       category: input.category,
       storageLocation: input.storageLocation,
-      quantity: input.quantity,
-      unit: input.unit,
-      expirationDate: dateOnlyToPrismaDate(input.expirationDate),
-      notes: input.notes ?? null,
+quantity: input.quantity,
+unit: input.unit,
+dateBought: dateOnlyToPrismaDate(input.dateBought) ?? new Date(),
+openedDate: dateOnlyToPrismaDate(input.openedDate),
+expirationDate: dateOnlyToPrismaDate(input.expirationDate),
+notes: input.notes ?? null,
     },
   });
 
@@ -97,9 +99,17 @@ export function buildKitchenItemUpdateData(
     data.unit = input.unit;
   }
 
-  if (hasOwnProperty(input, "expirationDate")) {
-    data.expirationDate = dateOnlyToPrismaDate(input.expirationDate);
-  }
+if (hasOwnProperty(input, "dateBought") && input.dateBought !== undefined) {
+  data.dateBought = dateOnlyToPrismaDate(input.dateBought) ?? undefined;
+}
+
+if (hasOwnProperty(input, "openedDate")) {
+  data.openedDate = dateOnlyToPrismaDate(input.openedDate);
+}
+
+if (hasOwnProperty(input, "expirationDate")) {
+  data.expirationDate = dateOnlyToPrismaDate(input.expirationDate);
+}
 
   if (hasOwnProperty(input, "notes")) {
     data.notes = input.notes ?? null;
