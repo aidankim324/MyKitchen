@@ -37,13 +37,20 @@ export type CategoryFilter = "all" | ItemCategory;
 
 export type ExpirationStatusFilter = "all" | ExpirationStatus;
 
-export type InventorySort = "expiration_date" | "name" | "recently_added";
+export type OpenedStatusFilter = "all" | "opened" | "unopened";
+
+export type InventorySort =
+  | "recently_added"
+  | "date_bought"
+  | "expiration_date"
+  | "name";
 
 export type InventoryFiltersState = {
   search: string;
   storageLocation: StorageLocationFilter;
   category: CategoryFilter;
   expirationStatus: ExpirationStatusFilter;
+  openedStatus: OpenedStatusFilter;
   sortBy: InventorySort;
 };
 
@@ -52,5 +59,6 @@ export const DEFAULT_INVENTORY_FILTERS: InventoryFiltersState = {
   storageLocation: "all",
   category: "all",
   expirationStatus: "all",
+  openedStatus: "all",
   sortBy: "recently_added",
 };

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="800"
+  height="600"
+  viewBox="0 0 800 600"
+  role="img"
+  aria-labelledby="title"
+>
+  <title id="title">Yogurt</title>
+
+  <rect width="800" height="600" fill="#F7EEFF" />
+
+  <circle
+    cx="650"
+    cy="105"
+    r="170"
+    fill="#DCC4F0"
+    opacity="0.55"
+  />
+
+  <circle
+    cx="100"
+    cy="540"
+    r="210"
+    fill="#DCC4F0"
+    opacity="0.38"
+  />
+
+  <rect
+    x="215"
+    y="95"
+    width="370"
+    height="345"
+    rx="70"
+    fill="#FFFFFF"
+    opacity="0.72"
+  />
+
+  <text
+    x="400"
+    y="335"
+    text-anchor="middle"
+    font-size="190"
+    font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif"
+  >🥣</text>
+
+  <text
+    x="400"
+    y="515"
+    text-anchor="middle"
+    font-size="48"
+    font-weight="700"
+    fill="#27272A"
+    font-family="Arial, sans-serif"
+  >Yogurt</text>
+</svg>
