@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { DeleteItemButton } from "@/components/inventory/DeleteItemButton";
+import { QuickItemActions } from "@/components/inventory/QuickItemActions";
 import { getExpirationStatus } from "@/lib/dates";
 import { getSuggestedItemImage } from "@/lib/item-images";
 import type {
@@ -148,9 +149,18 @@ export function InventoryItemCard({
           </p>
         </div>
 
-        <p className="mt-4 font-medium">
-          {item.quantity} {formatLabel(item.unit)}
-        </p>
+        <div className="mt-4">
+          <p className="font-medium">
+            {item.quantity} {formatLabel(item.unit)}
+          </p>
+
+          <QuickItemActions
+            itemId={item.id}
+            itemName={item.name}
+            quantity={item.quantity}
+            openedDate={item.openedDate}
+          />
+        </div>
 
         <dl className="mt-3 space-y-1.5 text-sm">
           <div className="flex justify-between gap-4">
