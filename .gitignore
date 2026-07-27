@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Private project and interview notes
+.notes/
+
+# Public environment-variable template
+!.env.example
