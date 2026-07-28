@@ -28,18 +28,18 @@
 - [x] Architecture document
 - [x] MVP hardening checklist
 - [x] Interview-notes template
-- [ ] Live-demo URL
-- [ ] Repository URL in README
+- [x] Live-demo URL
+- [x] Repository URL in README
 - [ ] Final screenshots
 - [ ] License decision
 
 ## Automated Testing
 
-- [ ] Configure test framework
-- [ ] Date-helper unit tests
-- [ ] Zod validation unit tests
-- [ ] Image-resolver unit tests
-- [ ] Inventory serializer unit tests
+- [x] Configure Vitest
+- [x] Date-helper unit tests
+- [x] Zod validation unit tests
+- [x] Image-resolver unit tests
+- [x] Inventory serializer unit tests
 - [ ] Query-layer tests
 - [ ] API route tests
 - [ ] Create-item end-to-end test
@@ -47,80 +47,99 @@
 - [ ] Delete-item end-to-end test
 - [ ] Authentication end-to-end test
 
+Current result:
+
+```text
+4 test files
+39 passing tests
+98.48% statement coverage
+```
+
 ## Reliability
 
-- [ ] Page-level loading states
-- [ ] Page-level error boundaries
-- [ ] Custom not-found handling
+- [x] Page-level loading states
+- [x] Page-level error boundaries
+- [x] Custom not-found handling
+- [x] Slow-network review
+- [x] Deployed CRUD smoke test
+- [x] Deployed quick-action smoke test
+- [x] Persistence-after-refresh test
+- [x] Empty-filter-result review
 - [ ] Consistent API error review
-- [ ] Database failure review
+- [ ] Database failure simulation
 - [ ] Duplicate-submit review
-- [ ] Slow-network review
 - [ ] Empty-inventory review
-- [ ] Empty-filter-result review
 - [ ] Large-inventory review
 
 ## Accessibility
 
-- [ ] Keyboard-only navigation
-- [ ] Visible focus states
-- [ ] Form-label review
-- [ ] Error-message announcement review
-- [ ] Button accessible-name review
-- [ ] Color-contrast review
+- [x] Keyboard-only navigation review
+- [x] Visible focus states
+- [x] Form-label review
+- [x] Error-message announcement support
+- [x] Button accessible-name review
+- [x] Reduced-motion support
+- [ ] Formal color-contrast audit
 - [ ] Screen-reader smoke test
-- [ ] Reduced-motion review
 
 ## Responsive Design
 
-- [ ] Small mobile review
-- [ ] Large mobile review
-- [ ] Tablet review
-- [ ] Laptop review
-- [ ] Large desktop review
-- [ ] Long item-name review
+- [x] Small mobile review
+- [x] Tablet review
+- [x] Laptop review
+- [x] Large desktop review
+- [x] Long item-name handling
+- [x] Mobile Add Item action
 - [ ] Large quantity review
 - [ ] Browser zoom review
 
 ## Security
 
-- [ ] Confirm `.env.local` is ignored
+- [x] Confirm `.env.local` is ignored
+- [x] Review protected application pages
+- [x] Review API authentication checks
+- [x] Review item-ownership checks
+- [x] Validate UUID route parameters
+- [x] Validate API input with Zod
+- [x] Update Next.js to a patched stable release
+- [x] Review npm audit findings
+- [x] Remove unused Supabase JavaScript SDK packages
+- [x] Remove generated Prisma Client from Git
 - [ ] Confirm no credentials exist in tracked files
 - [ ] Inspect Git history for exposed credentials
 - [ ] Rotate previously exposed development credentials
-- [ ] Review all protected pages
-- [ ] Review all API authentication checks
-- [ ] Review all ownership checks
 - [ ] Review request-size limits
-- [ ] Configure production Clerk keys
-- [ ] Configure production database credentials
+- [ ] Configure dedicated production Clerk keys
 
 ## Production Deployment
 
-- [ ] Choose hosting provider
-- [ ] Create production Clerk instance
-- [ ] Configure production environment variables
-- [ ] Configure production database connection
-- [ ] Apply production migrations
-- [ ] Deploy application
-- [ ] Test production sign-up
-- [ ] Test production sign-in
-- [ ] Test production CRUD
-- [ ] Test production quick actions
-- [ ] Verify production mobile layout
-- [ ] Verify logs do not expose secrets
-- [ ] Add basic error monitoring
-- [ ] Document backup expectations
+- [x] Choose Vercel as hosting provider
+- [x] Configure deployment environment variables
+- [x] Configure production database connection
+- [x] Deploy application
+- [x] Test production sign-up
+- [x] Test production sign-in
+- [x] Test production CRUD
+- [x] Test production quick actions
+- [x] Verify production mobile layout
+- [x] Review Vercel runtime logs
+- [x] Add live URL to documentation
+- [ ] Create dedicated production Clerk instance
+- [ ] Document production migration procedure
+- [ ] Add dedicated error monitoring
+- [ ] Document database backup expectations
+- [ ] Configure custom domain
 
 ## Portfolio Presentation
 
+- [x] Add live deployed URL to README
+- [x] Add repository URL to README
 - [ ] Add a concise GitHub repository description
 - [ ] Add repository topics
 - [ ] Add dashboard screenshot
 - [ ] Add inventory screenshot
 - [ ] Add form screenshot
 - [ ] Add mobile screenshot
-- [ ] Add deployed URL to README
 - [ ] Prepare a 60-second project explanation
 - [ ] Prepare a five-minute architecture explanation
 - [ ] Prepare one authentication/security story
@@ -138,3 +157,4 @@
 - [ ] User-uploaded images
 - [ ] Shared suggested-image catalog
 - [ ] Recipe suggestions
+- [ ] Atomic quantity updates

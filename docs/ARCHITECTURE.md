@@ -2,7 +2,7 @@
 
 ## Overview
 
-MyKitchen is a full-stack application built with the Next.js App Router.
+MyKitchen is a deployed full-stack application built with the Next.js App Router.
 
 It combines:
 
@@ -13,8 +13,43 @@ It combines:
 - A Prisma data-access layer
 - PostgreSQL persistence
 - Clerk authentication
+- Vercel deployment
 
-## System Diagram
+## Deployment
+
+The production application is available at:
+
+```text
+https://my-kitchen-drab.vercel.app/
+```
+
+Vercel builds and serves the Next.js application. Clerk manages authentication, while Prisma connects the server-side application to PostgreSQL hosted by Supabase.
+
+```mermaid
+flowchart LR
+    User[Browser]
+
+    subgraph Vercel[Vercel]
+        Next[Next.js application]
+        Pages[Server-rendered pages]
+        API[Route handlers]
+        Prisma[Prisma Client]
+    end
+
+    Clerk[Clerk]
+    Supabase[(Supabase PostgreSQL)]
+
+    User --> Next
+    Next --> Pages
+    Next --> API
+    Pages --> Clerk
+    API --> Clerk
+    Pages --> Prisma
+    API --> Prisma
+    Prisma --> Supabase
+```
+
+## Application Architecture
 
 ```mermaid
 flowchart TD
@@ -26,7 +61,7 @@ flowchart TD
     end
 
     subgraph NextApp[Next.js application]
-        Proxy[Clerk middleware and proxy]
+        Proxy[Clerk proxy]
         ProtectedLayout[Protected app layout]
         ServerPages[Server-rendered pages]
         RouteHandlers[API route handlers]
@@ -75,13 +110,13 @@ app/(app)
 
 The protected layout checks authentication before rendering its children.
 
-API routes perform their own authentication checks. Page protection does not prevent an unauthenticated caller from attempting a direct API request.
+API routes perform their own authentication checks. Protecting pages alone does not prevent an unauthenticated caller from attempting a direct API request.
 
 ## Authorization and Data Ownership
 
 Every kitchen item belongs to a Clerk user through its `userId`.
 
-Database queries that operate on an existing item include both:
+Database operations on existing items include both:
 
 - The item UUID
 - The authenticated user's Clerk ID
@@ -97,7 +132,7 @@ Find item where:
 
 This prevents one authenticated user from reading, editing, or deleting another user's inventory.
 
-The application never treats possession of an item UUID as proof of ownership.
+The application does not treat possession of an item UUID as proof of ownership. Missing items and unauthorized item IDs both produce not-found behavior, which avoids revealing whether another user's record exists.
 
 ## Request Validation
 
@@ -113,7 +148,7 @@ They validate:
 - Partial update requests
 - Client-side form submissions
 
-Client-side validation provides fast feedback, but the server always validates again because browser input cannot be trusted.
+Client-side validation provides immediate feedback, but the server validates again because browser input cannot be trusted.
 
 Dynamic item route parameters are also validated as UUIDs before database access.
 
@@ -131,25 +166,44 @@ lib/items/queries.ts
 lib/items/serializers.ts
 ```
 
-### Responsibilities
+### `lib/prisma.ts`
 
-`lib/prisma.ts`
-
-- Configures Prisma
+- Configures Prisma Client
 - Configures the PostgreSQL adapter
 - Reuses the client during development
 
-`lib/items/queries.ts`
+### `lib/items/queries.ts`
 
 - Owns inventory database operations
-- Applies user ownership requirements
+- Applies user-ownership requirements
 - Maps validated application input into Prisma operations
 
-`lib/items/serializers.ts`
+### `lib/items/serializers.ts`
 
 - Converts Prisma values into application-safe values
 - Converts Prisma Decimal values into numbers
-- Converts dates into date-only strings
+- Converts database dates into date-only strings
+- Converts timestamps into ISO strings
+
+## Prisma Client Generation
+
+Generated Prisma Client files are not committed to Git.
+
+The project generates them automatically through:
+
+```json
+{
+  "postinstall": "prisma generate",
+  "prebuild": "prisma generate"
+}
+```
+
+This ensures that:
+
+- Local installs receive a current Prisma Client
+- Vercel builds generate the client before compiling Next.js
+- Generated implementation files do not create repository noise
+- Prisma Client remains synchronized with `prisma/schema.prisma`
 
 ## Rendering Model
 
@@ -161,15 +215,17 @@ The application uses both server and client components.
 - Retrieve inventory data
 - Render initial application state
 - Keep database credentials on the server
+- Enforce user ownership in data queries
 
 ### Client responsibilities
 
 - Search and filter already-loaded inventory
-- Submit forms
+- Submit create and edit forms
 - Delete items
 - Perform quantity changes
 - Mark items as opened
-- Refresh server-rendered data after a mutation
+- Display loading and error states
+- Refresh server-rendered data after mutations
 
 ## Mutation Flow
 
@@ -190,18 +246,18 @@ sequenceDiagram
     DB-->>API: Updated item
     API-->>Client: Success response
     Client->>Page: router.refresh()
-    Page->>DB: Retrieve fresh inventory
+    Page->>DB: Retrieve current inventory
     DB-->>Page: Current inventory
     Page-->>Client: Updated server content
 ```
 
 The MVP uses server-confirmed updates rather than optimistic updates.
 
-This is simpler and avoids displaying a successful change before the database confirms it.
+This avoids showing a successful change before the database confirms it and keeps failure recovery straightforward.
 
 ## Current Concurrency Limitation
 
-Quick quantity actions currently calculate an absolute value in the browser:
+Quick quantity actions calculate an absolute value in the browser:
 
 ```text
 Current quantity: 2
@@ -211,7 +267,7 @@ Request body: { quantity: 3 }
 
 If two devices update the same item simultaneously, the later request could overwrite the earlier request.
 
-For a personal MVP, this is acceptable.
+For a personal inventory MVP, this tradeoff is acceptable.
 
 A future implementation could use:
 
@@ -233,7 +289,7 @@ expirationDate
 
 `openedDate` and `expirationDate` are optional.
 
-These values represent calendar dates rather than specific moments in time.
+These values represent calendar dates rather than specific moments in time. Date-only helpers use UTC components to avoid accidental date changes caused by local time zones.
 
 ## Expiration Status
 
@@ -268,13 +324,99 @@ Check phrase rules
   +--> No match: use category icon
 ```
 
-This approach provides a visual inventory without:
+This provides a visual inventory without:
 
 - External image APIs
 - Image-generation costs
 - File uploads
 - Storage configuration
 - Additional database fields
+
+## Loading, Error, and Not-Found Handling
+
+The protected application includes:
+
+```text
+app/(app)/loading.tsx
+app/(app)/error.tsx
+app/(app)/not-found.tsx
+```
+
+The public application also includes:
+
+```text
+app/not-found.tsx
+```
+
+These provide:
+
+- Route-level loading feedback
+- Retry behavior after rendering failures
+- Safe missing-item handling
+- Public and authenticated not-found pages
+
+## Accessibility
+
+Accessibility work includes:
+
+- A skip-to-content link
+- Semantic navigation labels
+- Visible keyboard focus
+- Accessible names for icon-only and quantity controls
+- Live result-count announcements
+- Mutation status announcements
+- Alert roles for errors
+- Minimum touch-target sizing
+- Reduced-motion behavior
+
+A formal assistive-technology audit remains outside the current MVP scope.
+
+## Automated Testing
+
+Vitest covers the application's isolated business logic:
+
+- Date-only parsing and conversion
+- Expiration-state boundaries
+- Leap-year and invalid-date behavior
+- Image suggestion rules
+- Zod validation
+- Inventory serialization
+
+Current test results:
+
+```text
+39 tests passing
+98.48% statement coverage
+97.05% branch coverage
+93.33% function coverage
+98.46% line coverage
+```
+
+The complete local quality gate is:
+
+```bash
+npm run check
+```
+
+It runs linting, unit tests, Prisma generation, type checking, and the production build.
+
+## Deployment Validation
+
+The deployed application has been manually tested for:
+
+- Public landing-page access
+- User registration
+- User sign-in
+- Protected-route access
+- Inventory creation
+- Inventory editing
+- Quantity updates
+- Mark-opened updates
+- Persistence after refresh
+- Inventory deletion
+- Custom not-found behavior
+- Mobile layout
+- Vercel runtime errors
 
 ## Future Automated Item Entry
 
@@ -299,7 +441,7 @@ flowchart LR
     API --> Database
 ```
 
-Barcode and receipt data can be incomplete or inaccurate. Requiring review prevents bad records from entering the inventory.
+Barcode and receipt data can be incomplete or inaccurate. Requiring review prevents incorrect records from entering the inventory.
 
 ## Important Invariants
 
@@ -314,3 +456,4 @@ The application should preserve these rules:
 7. Expiration status is derived rather than stored.
 8. Automated imports require user confirmation.
 9. Secret credentials are never sent to the browser or committed to Git.
+10. Generated Prisma Client files remain synchronized with the schema.
