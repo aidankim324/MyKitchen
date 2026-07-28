@@ -48,3 +48,6 @@ next-env.d.ts
 
 # Generated test coverage reports
 coverage/
+
+# Generated Prisma Client
+lib/generated/prisma/
