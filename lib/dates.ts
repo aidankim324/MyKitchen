@@ -7,20 +7,34 @@ export function isDateOnlyString(value: string): boolean {
   return DATE_ONLY_REGEX.test(value);
 }
 
-export function formatUtcDateOnly(date: Date = new Date()): string {
+export function formatUtcDateOnly(
+  date: Date = new Date()
+): string {
   const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(
+    date.getUTCMonth() + 1
+  ).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(
+    2,
+    "0"
+  );
 
   return `${year}-${month}-${day}`;
 }
 
-export function dateOnlyToUtcDayNumber(dateOnly: string): number {
+export function dateOnlyToUtcDayNumber(
+  dateOnly: string
+): number {
   if (!isDateOnlyString(dateOnly)) {
-    throw new Error(`Invalid date-only value: ${dateOnly}`);
+    throw new Error(
+      `Invalid date-only value: ${dateOnly}`
+    );
   }
 
-  const [year, month, day] = dateOnly.split("-").map(Number);
+  const [year, month, day] = dateOnly
+    .split("-")
+    .map(Number);
+
   const utcMs = Date.UTC(year, month - 1, day);
   const parsed = new Date(utcMs);
 
@@ -30,7 +44,9 @@ export function dateOnlyToUtcDayNumber(dateOnly: string): number {
     parsed.getUTCDate() === day;
 
   if (!isValidCalendarDate) {
-    throw new Error(`Invalid calendar date: ${dateOnly}`);
+    throw new Error(
+      `Invalid calendar date: ${dateOnly}`
+    );
   }
 
   return Math.floor(utcMs / MS_PER_DAY);
@@ -45,10 +61,15 @@ export function getExpirationStatus(
   }
 
   const todayDateOnly = formatUtcDateOnly(now);
-  const todayDayNumber = dateOnlyToUtcDayNumber(todayDateOnly);
-  const expirationDayNumber = dateOnlyToUtcDayNumber(expirationDate);
 
-  const diffDays = expirationDayNumber - todayDayNumber;
+  const todayDayNumber =
+    dateOnlyToUtcDayNumber(todayDateOnly);
+
+  const expirationDayNumber =
+    dateOnlyToUtcDayNumber(expirationDate);
+
+  const diffDays =
+    expirationDayNumber - todayDayNumber;
 
   if (diffDays < 0) {
     return "expired";
@@ -68,19 +89,18 @@ export function dateOnlyToPrismaDate(
     return null;
   }
 
-  const [year, month, day] = dateOnly.split("-").map(Number);
+  const utcDayNumber =
+    dateOnlyToUtcDayNumber(dateOnly);
 
-  return new Date(Date.UTC(year, month - 1, day));
+  return new Date(utcDayNumber * MS_PER_DAY);
 }
 
-export function prismaDateToDateOnly(date: Date | null): string | null {
+export function prismaDateToDateOnly(
+  date: Date | null
+): string | null {
   if (!date) {
     return null;
   }
 
-  const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(date.getUTCDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
+  return formatUtcDateOnly(date);
 }
