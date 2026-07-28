@@ -19,11 +19,12 @@ type QuickItemActionsProps = {
 function getTodayDateOnly() {
   const now = new Date();
   const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(
-    2,
-    "0"
-  );
-  const day = String(now.getDate()).padStart(2, "0");
+  const month = String(
+    now.getMonth() + 1
+  ).padStart(2, "0");
+  const day = String(
+    now.getDate()
+  ).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 }
@@ -55,7 +56,8 @@ export function QuickItemActions({
     string | null
   >(null);
 
-  const isUpdating = pendingAction !== null;
+  const isUpdating =
+    pendingAction !== null;
 
   async function updateItem(
     action: Exclude<PendingAction, null>,
@@ -70,7 +72,8 @@ export function QuickItemActions({
         {
           method: "PATCH",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
           body: JSON.stringify(body),
         }
@@ -105,13 +108,13 @@ export function QuickItemActions({
   }
 
   function changeQuantity(change: number) {
-    const nextQuantity = calculateQuantity(
-      quantity,
-      change
-    );
+    const nextQuantity =
+      calculateQuantity(quantity, change);
 
     const action =
-      change > 0 ? "increase" : "decrease";
+      change > 0
+        ? "increase"
+        : "decrease";
 
     void updateItem(action, {
       quantity: nextQuantity,
@@ -124,31 +127,48 @@ export function QuickItemActions({
     });
   }
 
+  const statusMessage =
+    pendingAction === "increase"
+      ? `Increasing ${itemName} quantity.`
+      : pendingAction === "decrease"
+        ? `Decreasing ${itemName} quantity.`
+        : pendingAction === "mark_opened"
+          ? `Marking ${itemName} as opened.`
+          : "";
+
   return (
     <div className="mt-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <div
-          className="inline-flex overflow-hidden rounded-lg border bg-white"
-          aria-label={`Quantity controls for ${itemName}`}
-        >
+      <div
+        role="group"
+        aria-label={`Quantity controls for ${itemName}. Current quantity ${quantity}.`}
+        aria-busy={isUpdating}
+        className="flex flex-wrap items-center gap-2"
+      >
+        <div className="inline-flex overflow-hidden rounded-xl border border-gray-300 bg-white">
           <button
             type="button"
-            onClick={() => changeQuantity(-1)}
-            disabled={isUpdating || quantity <= 0}
+            onClick={() =>
+              changeQuantity(-1)
+            }
+            disabled={
+              isUpdating || quantity <= 0
+            }
             aria-label={`Decrease ${itemName} quantity`}
-            className="flex size-9 items-center justify-center border-r text-lg font-medium text-gray-600 transition hover:bg-gray-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex size-11 items-center justify-center border-r border-gray-300 text-xl font-medium text-gray-700 transition hover:bg-gray-100 hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
           >
-            −
+            <span aria-hidden="true">−</span>
           </button>
 
           <button
             type="button"
-            onClick={() => changeQuantity(1)}
+            onClick={() =>
+              changeQuantity(1)
+            }
             disabled={isUpdating}
             aria-label={`Increase ${itemName} quantity`}
-            className="flex size-9 items-center justify-center text-lg font-medium text-gray-600 transition hover:bg-gray-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex size-11 items-center justify-center text-xl font-medium text-gray-700 transition hover:bg-gray-100 hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
           >
-            +
+            <span aria-hidden="true">+</span>
           </button>
         </div>
 
@@ -157,9 +177,10 @@ export function QuickItemActions({
             type="button"
             onClick={markOpened}
             disabled={isUpdating}
-            className="min-h-9 rounded-lg border bg-white px-3 text-xs font-medium text-gray-700 transition hover:bg-gray-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-11 items-center rounded-xl border border-gray-300 bg-white px-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {pendingAction === "mark_opened"
+            {pendingAction ===
+            "mark_opened"
               ? "Updating..."
               : "Mark opened"}
           </button>
@@ -167,16 +188,28 @@ export function QuickItemActions({
 
         {pendingAction === "increase" ||
         pendingAction === "decrease" ? (
-          <span className="text-xs text-gray-500">
+          <span
+            aria-hidden="true"
+            className="text-sm text-gray-600"
+          >
             Updating...
           </span>
         ) : null}
       </div>
 
+      <span
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {statusMessage}
+      </span>
+
       {error ? (
         <p
           role="alert"
-          className="mt-2 text-xs text-red-600"
+          className="mt-2 text-sm text-red-700"
         >
           {error}
         </p>

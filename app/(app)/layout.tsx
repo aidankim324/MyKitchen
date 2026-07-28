@@ -18,7 +18,14 @@ export default async function AppLayout({
   return (
     <div className="min-h-screen bg-gray-50 text-gray-950">
       <AppHeader />
-      {children}
+
+      <div
+        id="main-content"
+        tabIndex={-1}
+        className="outline-none"
+      >
+        {children}
+      </div>
     </div>
   );
 }
