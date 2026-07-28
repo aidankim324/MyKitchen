@@ -2,28 +2,29 @@
 
 MyKitchen is a full-stack kitchen inventory application for tracking food and household items stored in a fridge, freezer, or pantry.
 
-The application helps users monitor quantities, purchase dates, opened dates, and expiration dates while providing fast search, filtering, sorting, and common inventory actions.
+It helps users monitor quantities, purchase dates, opened dates, and expiration dates while providing fast search, filtering, sorting, and common inventory actions.
 
-> **Project status:** MVP hardening and deployment preparation
+> **Project status:** Functional MVP deployed and publicly available
 
 ## Live Demo
 
-Deployment is planned after automated testing and production hardening are complete.
+- **Live application:** https://my-kitchen-drab.vercel.app/
+- **Repository:** https://github.com/aidankim324/MyKitchen
 
-- **Live application:** Coming soon
-- **Repository:** This repository
+The live deployment uses Clerk authentication and a PostgreSQL database hosted by Supabase. Each authenticated user maintains a separate inventory.
 
 ## Problem
 
-Kitchen inventory is often tracked mentally, which makes it easy to forget what is available, buy duplicate items, or allow food to expire.
+Kitchen inventory is often tracked mentally, making it easy to forget what is available, purchase duplicate items, or allow food to expire.
 
-MyKitchen provides a centralized inventory where users can quickly:
+MyKitchen provides a centralized inventory where users can:
 
 - See what is currently available
 - Organize items by storage location
 - Identify expired and expiring items
 - Update quantities without opening a full edit form
 - Search and filter a growing inventory
+- Review recently added items and items requiring attention
 
 ## Feature Highlights
 
@@ -35,8 +36,9 @@ MyKitchen provides a centralized inventory where users can quickly:
 - Track purchase, opened, and expiration dates
 - Increase or decrease quantities directly from inventory cards
 - Mark an item as opened without visiting the edit page
+- Maintain separate inventory data for each user
 
-### Inventory Discovery
+### Search and Organization
 
 - Search by item name
 - Filter by storage location
@@ -44,6 +46,8 @@ MyKitchen provides a centralized inventory where users can quickly:
 - Filter by expiration status
 - Filter by opened status
 - Sort by recently added, name, purchase date, or expiration date
+- View live result counts
+- Clear active filters
 
 ### Dashboard
 
@@ -62,42 +66,49 @@ MyKitchen provides a centralized inventory where users can quickly:
 - Per-user inventory ownership
 - UUID route-parameter validation
 - Zod validation at API boundaries
+- Server-side authorization checks
+- Environment-based credential management
 
-### User Experience
+### Reliability and Accessibility
 
-- Responsive card-based inventory grid
-- Mobile-friendly add and edit forms
-- Loading and disabled states for form submissions
-- Inline validation messages
-- Static suggested item images
-- Category-based image fallbacks
+- Responsive desktop and mobile layouts
+- Route-level loading states
+- Application error boundaries
+- Custom not-found pages
+- Disabled and loading states for mutations
+- Inline form and API error messages
+- Keyboard-visible focus states
+- Accessible control names and labels
+- Reduced-motion support
+- Mobile Add Item action
 
 ## Screenshots
 
-Screenshots will be added after the final responsive review.
+Final portfolio screenshots are being prepared.
 
-Planned screenshots:
+Planned captures include:
 
 - Dashboard on desktop
 - Inventory grid on desktop
 - Add-item form
 - Inventory on a mobile viewport
 
-See [`screenshots/README.md`](screenshots/README.md) for the capture plan.
-
 ## Technology Stack
 
 | Area | Technology |
 |---|---|
-| Framework | Next.js App Router |
+| Framework | Next.js 16 App Router |
 | Language | TypeScript |
-| User interface | React and Tailwind CSS |
+| User interface | React 19 and Tailwind CSS 4 |
 | Authentication | Clerk |
 | Database access | Prisma 7 |
 | Database | PostgreSQL hosted by Supabase |
 | Validation | Zod |
 | Image handling | Next.js Image and local static assets |
-| Code quality | ESLint and TypeScript production builds |
+| Unit testing | Vitest |
+| Coverage | Vitest V8 coverage |
+| Code quality | ESLint, TypeScript, and production builds |
+| Deployment | Vercel |
 
 Exact dependency versions are recorded in `package.json` and `package-lock.json`.
 
@@ -107,16 +118,16 @@ Exact dependency versions are recorded in `package.json` and `package-lock.json`
 flowchart LR
     Browser[Browser]
 
-    subgraph NextJS[Next.js application]
+    subgraph Vercel[Vercel deployment]
         Pages[Server-rendered pages]
         Components[Client components]
         API[Authenticated API routes]
         Validation[Zod validation]
         Queries[Inventory query layer]
+        Prisma[Prisma Client]
     end
 
     Clerk[Clerk authentication]
-    Prisma[Prisma Client]
     Database[(Supabase PostgreSQL)]
 
     Browser --> Pages
@@ -143,10 +154,11 @@ More detail is available in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 | Include `userId` in database queries | Prevents users from accessing inventory records they do not own |
 | Validate on both the client and server | Client validation improves usability; server validation provides security |
 | Use server-confirmed quick updates | Simpler and more reliable than optimistic updates for the MVP |
-| Resolve suggested images from item names | Provides useful visuals without image uploads, API costs, or schema changes |
+| Resolve suggested images from item names | Provides useful visuals without uploads, API costs, or schema changes |
+| Generate Prisma Client during install and build | Keeps generated code out of Git while ensuring deployments have a current client |
 | Require review before future automated imports | Receipt and barcode data can be incomplete or inaccurate |
 
-## Current Data Model
+## Data Model
 
 Each kitchen item records:
 
@@ -162,7 +174,7 @@ Each kitchen item records:
 - Owning Clerk user
 - Creation and update timestamps
 
-Expiration status is calculated as one of:
+Expiration status is derived as one of:
 
 - `expired`
 - `expiring_soon`
@@ -193,6 +205,42 @@ All item routes require authentication and enforce record ownership.
 | `/inventory/new` | Add an inventory item |
 | `/inventory/[id]/edit` | Edit an inventory item |
 
+## Automated Testing
+
+The unit-test suite covers:
+
+- UTC date-only conversion and validation
+- Expiration-status calculation
+- Leap years and invalid calendar dates
+- Item-image suggestion rules
+- Zod create and update validation
+- Prisma-to-application serialization
+- Null optional fields and quantity conversion
+
+Current results:
+
+```text
+Test files: 4 passed
+Tests:      39 passed
+Statements: 98.48%
+Branches:   97.05%
+Functions:  93.33%
+Lines:      98.46%
+```
+
+Run the complete quality gate:
+
+```bash
+npm run check
+```
+
+The quality gate runs:
+
+1. ESLint
+2. Vitest
+3. Prisma Client generation
+4. Next.js production build and TypeScript checking
+
 ## Local Development
 
 ### Requirements
@@ -207,8 +255,8 @@ All item routes require authentication and enforce record ownership.
 Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR-GITHUB-USERNAME/mykitchen.git
-cd mykitchen
+git clone https://github.com/aidankim324/MyKitchen.git
+cd MyKitchen
 ```
 
 Install dependencies:
@@ -230,13 +278,7 @@ Never commit `.env.local` or share its contents.
 Apply database migrations:
 
 ```bash
-npx prisma migrate dev
-```
-
-Generate Prisma Client:
-
-```bash
-npx prisma generate
+npm run prisma:migrate
 ```
 
 Start the development server:
@@ -253,52 +295,20 @@ http://localhost:3000
 
 ## Available Scripts
 
-```bash
-npm run dev
-```
-
-Starts the Next.js development server.
-
-```bash
-npm run lint
-```
-
-Runs ESLint static analysis.
-
-```bash
-npm run build
-```
-
-Creates and type-checks the optimized production build.
-
-```bash
-npm run start
-```
-
-Runs a previously generated production build.
-
-## Quality Checks
-
-Before committing a change:
-
-```bash
-npm run lint && npm run build
-```
-
-Current quality checks include:
-
-- ESLint static analysis
-- TypeScript checking through the production build
-- Next.js production compilation
-- Manual browser testing
-
-Planned hardening includes:
-
-- Unit tests for date logic
-- Unit tests for Zod validation
-- Unit tests for image resolution
-- API integration tests
-- End-to-end user-flow tests
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Start the local development server |
+| `npm run build` | Generate Prisma Client and create a production build |
+| `npm run start` | Run a completed production build |
+| `npm run lint` | Run ESLint |
+| `npm test` | Run the unit-test suite |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Generate a coverage report |
+| `npm run check` | Run linting, tests, and a production build |
+| `npm run prisma:generate` | Generate Prisma Client |
+| `npm run prisma:migrate` | Create and apply a development migration |
+| `npm run prisma:deploy` | Apply existing migrations |
+| `npm run prisma:studio` | Open Prisma Studio |
 
 ## Project Structure
 
@@ -306,7 +316,7 @@ Planned hardening includes:
 app/
   (app)/                    Protected application pages
   (auth)/                   Clerk authentication pages
-  api/items/                Inventory API routes
+  api/items/                Authenticated inventory API routes
 
 components/
   inventory/                Forms, cards, filters, and item actions
@@ -314,61 +324,48 @@ components/
 
 docs/
   ARCHITECTURE.md           Technical design and data flow
-  MVP_CHECKLIST.md          Release-readiness checklist
+  MVP_CHECKLIST.md          Release and portfolio checklist
 
 lib/
   api/                      Shared API error responses
-  generated/prisma/         Generated Prisma Client
   items/                    Inventory queries and serializers
-  dates.ts                  Date and expiration helpers
+  generated/prisma/         Generated locally and ignored by Git
+  dates.ts                  UTC date-only utilities
   item-images.ts            Suggested-image resolver
   prisma.ts                 Prisma Client configuration
 
 prisma/
-  migrations/               Database migration history
   schema.prisma             Database schema
 
-public/item-images/         Reusable item illustrations
-screenshots/                Portfolio screenshots
-types/                      Shared TypeScript types
-validations/                Zod schemas
+tests/
+  dates.test.ts
+  item-images.test.ts
+  item-serializers.test.ts
+  item-validation.test.ts
+
+validations/
+  item.ts                   Request and form schemas
 ```
+
+## Current Limitations
+
+- Quantity quick actions send an absolute value rather than an atomic database increment.
+- Images are selected from a local static catalog rather than uploaded by users.
+- Barcode and receipt imports are not implemented.
+- API integration and browser end-to-end tests are still planned.
+- Production monitoring currently relies on Vercel runtime logs.
 
 ## Roadmap
 
-### MVP Hardening
-
-- Automated tests
-- Loading states
-- Error boundaries
-- Not-found pages
-- Accessibility review
-- Responsive design review
-- Production deployment
-- Portfolio screenshots
-
-### Future Features
+Potential future work includes:
 
 - UPC and EAN barcode scanning
-- Product database lookup
-- Receipt photo and upload processing
-- Reviewable bulk item imports
-- User-uploaded item images
+- Product-database lookup
+- Receipt image processing
+- Bulk review of imported item drafts
+- User-uploaded images
 - Recipe suggestions based on available inventory
-
-Automated imports will create reviewable drafts rather than immediately inserting records.
-
-## What I Learned
-
-This project has provided practical experience with:
-
-- Designing a full-stack application using the Next.js App Router
-- Dividing responsibilities between server and client components
-- Protecting routes and database queries with user ownership checks
-- Validating untrusted data at API boundaries
-- Designing and migrating a relational database schema
-- Handling date-only values consistently
-- Building reusable form, card, and filtering components
-- Evaluating tradeoffs between simplicity and more advanced architecture
-
-This section will continue to be updated as the project reaches production.
+- Atomic quantity updates
+- API integration tests
+- End-to-end authentication and CRUD tests
+- Dedicated error monitoring
