@@ -31,7 +31,7 @@
 - [x] Live-demo URL
 - [x] Repository URL in README
 - [ ] Final screenshots
-- [ ] License decision
+- [x] MIT License added
 
 ## Automated Testing
 
