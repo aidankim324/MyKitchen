@@ -45,3 +45,6 @@ next-env.d.ts
 
 # Public environment-variable template
 !.env.example
+
+# Generated test coverage reports
+coverage/
