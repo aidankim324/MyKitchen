@@ -82,17 +82,6 @@ MyKitchen provides a centralized inventory where users can:
 - Reduced-motion support
 - Mobile Add Item action
 
-## Screenshots
-
-Final portfolio screenshots are being prepared.
-
-Planned captures include:
-
-- Dashboard on desktop
-- Inventory grid on desktop
-- Add-item form
-- Inventory on a mobile viewport
-
 ## Technology Stack
 
 | Area | Technology |
@@ -324,7 +313,6 @@ components/
 
 docs/
   ARCHITECTURE.md           Technical design and data flow
-  MVP_CHECKLIST.md          Release and portfolio checklist
 
 lib/
   api/                      Shared API error responses
