@@ -73,29 +73,35 @@ function getStatusDisplay(
   if (status === "expired") {
     return {
       label: "Expired",
-      classes: "bg-red-100 text-red-800",
+      dotClasses: "bg-danger",
+      labelClasses:
+        "bg-danger-soft text-danger",
     };
   }
 
   if (status === "expiring_soon") {
     return {
       label: "Expiring soon",
-      classes:
-        "bg-amber-100 text-amber-800",
+      dotClasses: "bg-warning",
+      labelClasses:
+        "bg-warning-soft text-warning",
     };
   }
 
   if (status === "fresh") {
     return {
       label: "Fresh",
-      classes:
-        "bg-green-100 text-green-800",
+      dotClasses: "bg-success",
+      labelClasses:
+        "bg-success-soft text-success",
     };
   }
 
   return {
     label: "No expiration",
-    classes: "bg-white/95 text-gray-700",
+    dotClasses: "bg-muted-light",
+    labelClasses:
+      "bg-surface-subtle text-muted",
   };
 }
 
@@ -124,9 +130,14 @@ export function InventoryItemCard({
   return (
     <article
       aria-labelledby={titleId}
-      className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none"
+      className={[
+        "group overflow-hidden rounded-card border border-line bg-surface",
+        "shadow-soft transition duration-[var(--duration-standard)] ease-standard",
+        "hover:-translate-y-px hover:border-line-strong hover:shadow-raised",
+        "motion-reduce:transform-none motion-reduce:transition-none",
+      ].join(" ")}
     >
-      <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-gray-100">
+      <div className="relative flex h-36 items-center justify-center overflow-hidden bg-surface-subtle sm:h-40">
         {suggestedImage ? (
           <Image
             src={suggestedImage.src}
@@ -134,12 +145,12 @@ export function InventoryItemCard({
             fill
             unoptimized
             sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
-            className="object-cover transition duration-300 group-hover:scale-[1.03] motion-reduce:transform-none motion-reduce:transition-none"
+            className="object-cover transition-transform duration-[var(--duration-slow)] ease-standard group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none"
           />
         ) : (
           <span
             aria-hidden="true"
-            className="text-6xl transition group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
+            className="text-5xl transition-transform duration-[var(--duration-standard)] ease-standard group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
           >
             {getCategoryIcon(item.category)}
           </span>
@@ -147,72 +158,100 @@ export function InventoryItemCard({
 
         <span
           aria-label={`Expiration status: ${status.label}`}
-          className={`absolute right-3 top-3 z-10 rounded-full px-2.5 py-1 text-xs font-medium shadow-sm ${status.classes}`}
+          className={[
+            "absolute right-3 top-3 z-10 inline-flex min-h-7 items-center gap-1.5",
+            "rounded-control px-2.5 text-[0.7rem] font-semibold shadow-sm",
+            status.labelClasses,
+          ].join(" ")}
         >
+          <span
+            aria-hidden="true"
+            className={`size-1.5 rounded-full ${status.dotClasses}`}
+          />
+
           {status.label}
         </span>
       </div>
 
       <div className="p-4">
-        <div>
+        <div className="min-w-0">
           <h2
             id={titleId}
             title={item.name}
-            className="line-clamp-2 min-h-14 break-words text-lg font-semibold leading-7"
+            className="truncate text-base font-semibold tracking-[-0.015em] text-ink"
           >
             {item.name}
           </h2>
 
-          <p className="mt-1 text-sm text-gray-600">
-            {formatLabel(
-              item.storageLocation
-            )}
-            {" · "}
-            {formatLabel(item.category)}
-          </p>
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
+            <span>
+              {formatLabel(
+                item.storageLocation
+              )}
+            </span>
+
+            <span
+              aria-hidden="true"
+              className="size-1 rounded-full bg-line-strong"
+            />
+
+            <span>
+              {formatLabel(item.category)}
+            </span>
+          </div>
         </div>
 
-        <div className="mt-4">
-          <p className="font-medium">
-            {item.quantity}{" "}
-            {formatLabel(item.unit)}
-          </p>
+        <div className="mt-4 border-t border-line pt-3">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-muted-light">
+                Quantity
+              </p>
 
-          <QuickItemActions
-            itemId={item.id}
-            itemName={item.name}
-            quantity={item.quantity}
-            openedDate={item.openedDate}
-          />
+              <p className="mt-1 text-base font-semibold text-ink">
+                {item.quantity}{" "}
+                <span className="text-sm font-medium text-muted">
+                  {formatLabel(item.unit)}
+                </span>
+              </p>
+            </div>
+
+            <QuickItemActions
+              itemId={item.id}
+              itemName={item.name}
+              quantity={item.quantity}
+              openedDate={item.openedDate}
+            />
+          </div>
         </div>
 
-        <dl className="mt-4 space-y-2 text-sm">
-          <div className="flex justify-between gap-4">
-            <dt className="text-gray-600">
+        <dl className="mt-4 grid gap-2 border-t border-line pt-3 text-xs">
+          <div className="flex items-center justify-between gap-4">
+            <dt className="text-muted">
               Bought
             </dt>
-            <dd className="text-right">
+            <dd className="font-medium text-ink">
               {formatDate(item.dateBought)}
             </dd>
           </div>
 
           {item.openedDate ? (
-            <div className="flex justify-between gap-4">
-              <dt className="text-gray-600">
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-muted">
                 Opened
               </dt>
-              <dd className="text-right">
+              <dd className="font-medium text-ink">
                 {formatDate(item.openedDate)}
               </dd>
             </div>
           ) : null}
 
           {item.expirationDate ? (
-            <div className="flex justify-between gap-4">
-              <dt className="text-gray-600">
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-muted">
                 Expires
               </dt>
-              <dd className="text-right">
+              <dd className="font-medium text-ink">
                 {formatDate(
                   item.expirationDate
                 )}
@@ -223,11 +262,11 @@ export function InventoryItemCard({
 
         <div
           aria-label={`Actions for ${item.name}`}
-          className="mt-5 flex flex-wrap items-center gap-2 border-t border-gray-200 pt-3"
+          className="mt-3 flex items-center justify-end gap-1 border-t border-line pt-2"
         >
           <Link
             href={`/inventory/${item.id}/edit`}
-            className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-black"
+            className="inline-flex min-h-9 items-center rounded-control px-2.5 text-xs font-medium text-muted transition-colors duration-[var(--duration-fast)] ease-standard hover:bg-surface-subtle hover:text-ink"
           >
             Edit
           </Link>

@@ -25,6 +25,48 @@ function isActiveRoute(
   );
 }
 
+function BrandMark() {
+  return (
+    <span
+      aria-hidden="true"
+      className="relative flex size-9 items-center justify-center rounded-[0.7rem] bg-accent text-accent-foreground shadow-soft"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        className="size-5"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M7.25 18V8.5"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <path
+          d="M7.25 13.75L15.75 7.25"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <path
+          d="M10.5 11.25L16.75 18"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <path
+          d="M14.25 5.75C16.2 4.65 18.1 4.7 19.65 5.45C18.9 7.15 17.55 8.3 15.55 8.65"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
 export function AppHeader() {
   const pathname = usePathname();
 
@@ -32,18 +74,32 @@ export function AppHeader() {
     <>
       <a
         href="#main-content"
-        className="fixed left-4 top-4 z-[60] -translate-y-24 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white shadow-lg transition focus:translate-y-0"
+        className="fixed left-4 top-4 z-[60] -translate-y-24 rounded-control bg-ink px-4 py-2 text-sm font-medium text-white shadow-raised transition-transform duration-[var(--duration-fast)] ease-standard focus:translate-y-0"
       >
         Skip to main content
       </a>
 
-      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex min-h-16 max-w-7xl items-center gap-2 px-3 sm:gap-5 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur-md">
+        <div className="mx-auto flex min-h-16 max-w-7xl items-center gap-3 px-3 sm:gap-6 sm:px-6 lg:px-8">
           <Link
             href="/dashboard"
-            className="shrink-0 rounded-md text-base font-semibold tracking-tight sm:text-lg"
+            aria-label="MyKitchen dashboard"
+            className="flex shrink-0 items-center gap-2.5 rounded-control"
           >
-            MyKitchen
+            <BrandMark />
+
+            <span className="hidden sm:block">
+              <span className="block text-[0.95rem] font-semibold leading-4 tracking-[-0.02em] text-ink">
+                MyKitchen
+              </span>
+              <span className="mt-0.5 block text-[0.68rem] font-medium uppercase leading-3 tracking-[0.12em] text-muted">
+                Home inventory
+              </span>
+            </span>
+
+            <span className="text-base font-semibold tracking-[-0.02em] text-ink sm:hidden">
+              MyKitchen
+            </span>
           </Link>
 
           <nav
@@ -64,14 +120,21 @@ export function AppHeader() {
                     isActive ? "page" : undefined
                   }
                   className={[
-                    "inline-flex min-h-11 shrink-0 items-center rounded-lg px-3",
-                    "text-sm font-medium transition",
+                    "relative inline-flex min-h-10 shrink-0 items-center rounded-control px-3",
+                    "text-sm font-medium transition-colors duration-[var(--duration-fast)] ease-standard",
                     isActive
-                      ? "bg-gray-100 text-black"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-black",
+                      ? "bg-accent-soft text-accent-active"
+                      : "text-muted hover:bg-surface-subtle hover:text-ink",
                   ].join(" ")}
                 >
                   {item.label}
+
+                  {isActive ? (
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-x-3 bottom-1 h-px rounded-full bg-accent/60"
+                    />
+                  ) : null}
                 </Link>
               );
             })}
@@ -81,19 +144,21 @@ export function AppHeader() {
             <Link
               href="/inventory/new"
               aria-label="Add inventory item"
-              className="inline-flex size-10 items-center justify-center rounded-lg bg-black text-xl font-medium text-white shadow-sm transition hover:bg-gray-800 sm:hidden"
+              className="inline-flex size-10 items-center justify-center rounded-control bg-accent text-xl font-medium text-accent-foreground shadow-soft transition duration-[var(--duration-fast)] ease-standard hover:-translate-y-px hover:bg-accent-hover active:translate-y-0 active:bg-accent-active motion-reduce:transform-none sm:hidden"
             >
               <span aria-hidden="true">+</span>
             </Link>
 
             <Link
               href="/inventory/new"
-              className="hidden min-h-11 items-center rounded-lg bg-black px-4 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 sm:inline-flex"
+              className="hidden min-h-10 items-center rounded-control bg-accent px-4 text-sm font-medium text-accent-foreground shadow-soft transition duration-[var(--duration-fast)] ease-standard hover:-translate-y-px hover:bg-accent-hover active:translate-y-0 active:bg-accent-active motion-reduce:transform-none sm:inline-flex"
             >
               Add item
             </Link>
 
-            <UserButton />
+            <div className="flex size-10 items-center justify-center rounded-full transition-colors duration-[var(--duration-fast)] hover:bg-surface-subtle">
+              <UserButton />
+            </div>
           </div>
         </div>
       </header>

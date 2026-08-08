@@ -41,6 +41,33 @@ function calculateQuantity(
   );
 }
 
+function LoadingIndicator() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="size-4 animate-spin motion-reduce:animate-none"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="8"
+        stroke="currentColor"
+        strokeWidth="2"
+        className="opacity-20"
+      />
+      <path
+        d="M20 12A8 8 0 0 0 12 4"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export function QuickItemActions({
   itemId,
   itemName,
@@ -137,14 +164,14 @@ export function QuickItemActions({
           : "";
 
   return (
-    <div className="mt-3">
+    <div className="min-w-0">
       <div
         role="group"
-        aria-label={`Quantity controls for ${itemName}. Current quantity ${quantity}.`}
+        aria-label={`Quick actions for ${itemName}. Current quantity ${quantity}.`}
         aria-busy={isUpdating}
-        className="flex flex-wrap items-center gap-2"
+        className="flex items-center gap-2"
       >
-        <div className="inline-flex overflow-hidden rounded-xl border border-gray-300 bg-white">
+        <div className="inline-flex shrink-0 overflow-hidden rounded-control border border-line bg-surface">
           <button
             type="button"
             onClick={() =>
@@ -154,9 +181,13 @@ export function QuickItemActions({
               isUpdating || quantity <= 0
             }
             aria-label={`Decrease ${itemName} quantity`}
-            className="flex size-11 items-center justify-center border-r border-gray-300 text-xl font-medium text-gray-700 transition hover:bg-gray-100 hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex size-11 items-center justify-center border-r border-line text-lg font-medium text-muted transition-colors duration-[var(--duration-fast)] ease-standard hover:bg-surface-subtle hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <span aria-hidden="true">−</span>
+            {pendingAction === "decrease" ? (
+              <LoadingIndicator />
+            ) : (
+              <span aria-hidden="true">−</span>
+            )}
           </button>
 
           <button
@@ -166,35 +197,79 @@ export function QuickItemActions({
             }
             disabled={isUpdating}
             aria-label={`Increase ${itemName} quantity`}
-            className="flex size-11 items-center justify-center text-xl font-medium text-gray-700 transition hover:bg-gray-100 hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex size-11 items-center justify-center text-lg font-medium text-muted transition-colors duration-[var(--duration-fast)] ease-standard hover:bg-surface-subtle hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <span aria-hidden="true">+</span>
+            {pendingAction === "increase" ? (
+              <LoadingIndicator />
+            ) : (
+              <span aria-hidden="true">+</span>
+            )}
           </button>
         </div>
 
-        {!openedDate ? (
+        {openedDate ? (
+          <span className="inline-flex min-h-11 min-w-[4.75rem] shrink-0 items-center justify-center gap-1.5 rounded-control border border-success/15 bg-success-soft px-2.5 text-xs font-semibold text-success">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              fill="none"
+              className="size-3.5"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 12.5L10 16.5L18 7.5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+
+            Opened
+          </span>
+        ) : (
           <button
             type="button"
             onClick={markOpened}
             disabled={isUpdating}
-            className="inline-flex min-h-11 items-center rounded-xl border border-gray-300 bg-white px-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label={`Mark ${itemName} as opened`}
+            title="Mark opened"
+            className="inline-flex min-h-11 min-w-[4.75rem] shrink-0 items-center justify-center gap-1.5 rounded-control border border-line bg-surface px-2.5 text-xs font-semibold text-muted transition-colors duration-[var(--duration-fast)] ease-standard hover:border-line-strong hover:bg-surface-subtle hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
           >
             {pendingAction ===
-            "mark_opened"
-              ? "Updating..."
-              : "Mark opened"}
-          </button>
-        ) : null}
+            "mark_opened" ? (
+              <>
+                <LoadingIndicator />
+                <span>Saving</span>
+              </>
+            ) : (
+              <>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="size-3.5"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 5V19"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M5 12H19"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  />
+                </svg>
 
-        {pendingAction === "increase" ||
-        pendingAction === "decrease" ? (
-          <span
-            aria-hidden="true"
-            className="text-sm text-gray-600"
-          >
-            Updating...
-          </span>
-        ) : null}
+                <span>Open</span>
+              </>
+            )}
+          </button>
+        )}
       </div>
 
       <span
@@ -209,7 +284,7 @@ export function QuickItemActions({
       {error ? (
         <p
           role="alert"
-          className="mt-2 text-sm text-red-700"
+          className="mt-2 max-w-56 text-xs text-danger"
         >
           {error}
         </p>

@@ -23,6 +23,11 @@ type InventoryBrowserProps = {
   today: string;
 };
 
+type ActiveFilterChipProps = {
+  label: string;
+  onRemove: () => void;
+};
+
 const LOCATION_TABS: StorageLocationFilter[] = [
   "all",
   ...STORAGE_LOCATIONS,
@@ -153,11 +158,32 @@ function filterItems(
   });
 }
 
-const controlClasses = [
-  "min-h-11 rounded-xl border border-gray-300 bg-white",
-  "px-3.5 text-sm shadow-sm outline-none transition",
-  "hover:border-gray-400",
-  "focus-visible:border-blue-600 focus-visible:ring-2 focus-visible:ring-blue-100",
+function ActiveFilterChip({
+  label,
+  onRemove,
+}: ActiveFilterChipProps) {
+  return (
+    <span className="inline-flex min-h-8 items-center gap-1 rounded-control border border-line bg-surface px-2.5 text-xs font-medium text-muted shadow-soft">
+      {label}
+
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label={`Remove ${label} filter`}
+        className="flex size-6 items-center justify-center rounded-md text-muted-light transition-colors duration-[var(--duration-fast)] ease-standard hover:bg-surface-subtle hover:text-ink"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </span>
+  );
+}
+
+const selectClasses = [
+  "min-h-10 rounded-control border border-line bg-surface",
+  "px-3 text-sm text-ink shadow-soft outline-none",
+  "transition-colors duration-[var(--duration-fast)] ease-standard",
+  "hover:border-line-strong",
+  "focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent-soft",
 ].join(" ");
 
 export function InventoryBrowser({
@@ -229,22 +255,29 @@ export function InventoryBrowser({
   ].filter(Boolean).length;
 
   const hasActiveFilters =
-    filters.search !== "" ||
+    filters.search.trim() !== "" ||
     filters.storageLocation !== "all" ||
     filters.category !== "all" ||
     filters.expirationStatus !== "all" ||
     filters.openedStatus !== "all" ||
     filters.sortBy !== "recently_added";
 
+  const hasFilterChips =
+    filters.search.trim() !== "" ||
+    filters.category !== "all" ||
+    filters.expirationStatus !== "all" ||
+    filters.openedStatus !== "all";
+
   return (
     <section
       aria-label="Inventory controls and results"
+      className="space-y-5"
     >
-      <div className="mb-5 overflow-x-auto border-b border-gray-200">
+      <div className="overflow-x-auto">
         <div
           role="group"
           aria-label="Filter inventory by storage location"
-          className="flex min-w-max gap-1"
+          className="inline-flex min-w-max items-center gap-1 rounded-panel border border-line bg-surface p-1 shadow-soft"
         >
           {LOCATION_TABS.map((location) => {
             const isActive =
@@ -262,16 +295,23 @@ export function InventoryBrowser({
                   })
                 }
                 className={[
-                  "inline-flex min-h-11 items-center border-b-2 px-4 py-2",
-                  "text-sm font-medium transition",
+                  "relative inline-flex min-h-10 items-center gap-2 rounded-control px-3.5",
+                  "text-sm font-medium transition-all duration-[var(--duration-standard)] ease-standard",
                   isActive
-                    ? "border-black text-black"
-                    : "border-transparent text-gray-600 hover:border-gray-300 hover:text-black",
+                    ? "bg-accent-soft text-accent-active shadow-sm"
+                    : "text-muted hover:bg-surface-subtle hover:text-ink",
                 ].join(" ")}
               >
                 {formatLabel(location)}
 
-                <span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">
+                <span
+                  className={[
+                    "min-w-5 rounded-md px-1.5 py-0.5 text-center text-[0.68rem] font-semibold",
+                    isActive
+                      ? "bg-surface text-accent"
+                      : "bg-surface-subtle text-muted-light",
+                  ].join(" ")}
+                >
                   {locationCounts[location]}
                 </span>
               </button>
@@ -280,15 +320,41 @@ export function InventoryBrowser({
         </div>
       </div>
 
-      <div className="mb-5 space-y-4">
+      <div className="rounded-card border border-line bg-surface p-3 shadow-soft sm:p-4">
         <div className="flex flex-col gap-3 lg:flex-row">
-          <div className="min-w-0 flex-1">
+          <div className="relative min-w-0 flex-1">
             <label
               htmlFor="inventory-search"
               className="sr-only"
             >
               Search inventory by item name
             </label>
+
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-light"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                className="size-4.5"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="6.5"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                />
+                <path
+                  d="M16 16L20 20"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
 
             <input
               id="inventory-search"
@@ -304,8 +370,16 @@ export function InventoryBrowser({
                   search: event.target.value,
                 })
               }
-              className={`${controlClasses} w-full px-4`}
-              placeholder="Search inventory"
+              className={[
+                "min-h-11 w-full rounded-control border border-line bg-canvas",
+                "pl-10 pr-4 text-sm text-ink outline-none",
+                "transition-all duration-[var(--duration-fast)] ease-standard",
+                "placeholder:text-muted-light",
+                "hover:border-line-strong",
+                "focus:border-accent focus:bg-surface focus:shadow-soft",
+                "focus-visible:ring-2 focus-visible:ring-accent-soft",
+              ].join(" ")}
+              placeholder="Search your kitchen"
             />
           </div>
 
@@ -328,7 +402,7 @@ export function InventoryBrowser({
                       .value as InventorySort,
                 })
               }
-              className={`${controlClasses} min-w-0 sm:min-w-44`}
+              className={`${selectClasses} min-w-0 sm:min-w-44`}
             >
               <option value="recently_added">
                 Recently added
@@ -351,12 +425,50 @@ export function InventoryBrowser({
                   (current) => !current
                 )
               }
-              className={`${controlClasses} whitespace-nowrap font-medium`}
+              className={[
+                "inline-flex min-h-10 items-center justify-center gap-2 rounded-control",
+                "border px-3.5 text-sm font-medium shadow-soft outline-none",
+                "transition-all duration-[var(--duration-fast)] ease-standard",
+                showFilters ||
+                advancedFilterCount > 0
+                  ? "border-accent/30 bg-accent-soft text-accent-active"
+                  : "border-line bg-surface text-muted hover:border-line-strong hover:bg-surface-subtle hover:text-ink",
+              ].join(" ")}
             >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="size-4"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M4 7H20"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M7 12H17"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M10 17H14"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+              </svg>
+
               Filters
-              {advancedFilterCount > 0
-                ? ` (${advancedFilterCount})`
-                : ""}
+
+              {advancedFilterCount > 0 ? (
+                <span className="flex size-5 items-center justify-center rounded-md bg-accent text-[0.68rem] font-semibold text-accent-foreground">
+                  {advancedFilterCount}
+                </span>
+              ) : null}
             </button>
           </div>
         </div>
@@ -365,12 +477,12 @@ export function InventoryBrowser({
           <div
             id={FILTER_PANEL_ID}
             aria-label="Additional inventory filters"
-            className="grid gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:grid-cols-3"
+            className="mt-4 grid gap-4 border-t border-line pt-4 sm:grid-cols-3"
           >
             <div>
               <label
                 htmlFor="category-filter"
-                className="block text-sm font-medium"
+                className="block text-xs font-semibold uppercase tracking-[0.1em] text-muted"
               >
                 Category
               </label>
@@ -386,7 +498,7 @@ export function InventoryBrowser({
                         .value as CategoryFilter,
                   })
                 }
-                className={`${controlClasses} mt-1.5 w-full`}
+                className={`${selectClasses} mt-2 w-full`}
               >
                 <option value="all">
                   All categories
@@ -408,7 +520,7 @@ export function InventoryBrowser({
             <div>
               <label
                 htmlFor="expiration-filter"
-                className="block text-sm font-medium"
+                className="block text-xs font-semibold uppercase tracking-[0.1em] text-muted"
               >
                 Expiration
               </label>
@@ -426,7 +538,7 @@ export function InventoryBrowser({
                         .value as ExpirationStatusFilter,
                   })
                 }
-                className={`${controlClasses} mt-1.5 w-full`}
+                className={`${selectClasses} mt-2 w-full`}
               >
                 <option value="all">
                   All statuses
@@ -449,7 +561,7 @@ export function InventoryBrowser({
             <div>
               <label
                 htmlFor="opened-filter"
-                className="block text-sm font-medium"
+                className="block text-xs font-semibold uppercase tracking-[0.1em] text-muted"
               >
                 Opened status
               </label>
@@ -465,7 +577,7 @@ export function InventoryBrowser({
                         .value as OpenedStatusFilter,
                   })
                 }
-                className={`${controlClasses} mt-1.5 w-full`}
+                className={`${selectClasses} mt-2 w-full`}
               >
                 <option value="all">
                   All items
@@ -480,29 +592,89 @@ export function InventoryBrowser({
             </div>
           </div>
         ) : null}
+      </div>
 
-        <div className="flex min-h-11 flex-wrap items-center justify-between gap-3">
+      <div className="flex min-h-9 flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <p
             id={RESULTS_SUMMARY_ID}
             role="status"
             aria-live="polite"
             aria-atomic="true"
-            className="text-sm text-gray-600"
+            className="mr-1 text-sm text-muted"
           >
             Showing {visibleItems.length} of{" "}
-            {items.length} items
+            {items.length}
           </p>
 
-          {hasActiveFilters ? (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-black"
+          {hasFilterChips ? (
+            <div
+              aria-label="Active inventory filters"
+              className="flex flex-wrap gap-2"
             >
-              Clear filters
-            </button>
+              {filters.search.trim() !== "" ? (
+                <ActiveFilterChip
+                  label={`Search: ${filters.search.trim()}`}
+                  onRemove={() =>
+                    updateFilters({
+                      search: "",
+                    })
+                  }
+                />
+              ) : null}
+
+              {filters.category !== "all" ? (
+                <ActiveFilterChip
+                  label={formatLabel(
+                    filters.category
+                  )}
+                  onRemove={() =>
+                    updateFilters({
+                      category: "all",
+                    })
+                  }
+                />
+              ) : null}
+
+              {filters.expirationStatus !==
+              "all" ? (
+                <ActiveFilterChip
+                  label={formatLabel(
+                    filters.expirationStatus
+                  )}
+                  onRemove={() =>
+                    updateFilters({
+                      expirationStatus: "all",
+                    })
+                  }
+                />
+              ) : null}
+
+              {filters.openedStatus !== "all" ? (
+                <ActiveFilterChip
+                  label={formatLabel(
+                    filters.openedStatus
+                  )}
+                  onRemove={() =>
+                    updateFilters({
+                      openedStatus: "all",
+                    })
+                  }
+                />
+              ) : null}
+            </div>
           ) : null}
         </div>
+
+        {hasActiveFilters ? (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="inline-flex min-h-9 items-center rounded-control px-3 text-sm font-medium text-muted transition-colors duration-[var(--duration-fast)] ease-standard hover:bg-surface-subtle hover:text-ink"
+          >
+            Reset all
+          </button>
+        ) : null}
       </div>
 
       <div id={RESULTS_ID}>
