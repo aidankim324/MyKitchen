@@ -5,86 +5,62 @@ const images = [
   {
     slug: "milk",
     label: "Milk",
-    emoji: "🥛",
-    background: "#EAF4FF",
-    accent: "#BFDFFF",
+    emoji: "\u{1F95B}",
   },
   {
     slug: "eggs",
     label: "Eggs",
-    emoji: "🥚",
-    background: "#FFF8E7",
-    accent: "#F5DFA8",
+    emoji: "\u{1F95A}",
   },
   {
     slug: "bread",
     label: "Bread",
-    emoji: "🍞",
-    background: "#FFF0DB",
-    accent: "#EBCB9E",
+    emoji: "\u{1F35E}",
   },
   {
     slug: "rice",
     label: "Rice",
-    emoji: "🍚",
-    background: "#F4F4F0",
-    accent: "#D9D9CF",
+    emoji: "\u{1F35A}",
   },
   {
     slug: "chicken",
     label: "Chicken",
-    emoji: "🍗",
-    background: "#FFF0E8",
-    accent: "#EDC6B2",
+    emoji: "\u{1F357}",
   },
   {
     slug: "cheese",
     label: "Cheese",
-    emoji: "🧀",
-    background: "#FFF8D8",
-    accent: "#F4DD79",
+    emoji: "\u{1F9C0}",
   },
   {
     slug: "yogurt",
     label: "Yogurt",
-    emoji: "🥣",
-    background: "#F7EEFF",
-    accent: "#DCC4F0",
+    emoji: "\u{1F963}",
   },
   {
     slug: "apple",
-    label: "Apples",
-    emoji: "🍎",
-    background: "#FCEBEC",
-    accent: "#EDB8BB",
+    label: "Apple",
+    emoji: "\u{1F34E}",
   },
   {
     slug: "banana",
-    label: "Bananas",
-    emoji: "🍌",
-    background: "#FFF9D9",
-    accent: "#F3E27A",
+    label: "Banana",
+    emoji: "\u{1F34C}",
   },
   {
     slug: "lettuce",
     label: "Lettuce",
-    emoji: "🥬",
-    background: "#EAF7EB",
-    accent: "#B9DFBC",
+    emoji: "\u{1F96C}",
   },
   {
     slug: "tomato",
-    label: "Tomatoes",
-    emoji: "🍅",
-    background: "#FDEBEC",
-    accent: "#EFB8BA",
+    label: "Tomato",
+    emoji: "\u{1F345}",
   },
   {
     slug: "orange",
-    label: "Oranges",
-    emoji: "🍊",
-    background: "#FFF0DD",
-    accent: "#F5CF9C",
+    label: "Orange",
+    emoji: "\u{1F34A}",
   },
 ];
 
@@ -101,59 +77,21 @@ function createSvg(image) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  width="800"
-  height="600"
-  viewBox="0 0 800 600"
+  width="160"
+  height="160"
+  viewBox="0 0 160 160"
   role="img"
   aria-labelledby="title"
 >
   <title id="title">${escapeXml(image.label)}</title>
 
-  <rect width="800" height="600" fill="${image.background}" />
-
-  <circle
-    cx="650"
-    cy="105"
-    r="170"
-    fill="${image.accent}"
-    opacity="0.55"
-  />
-
-  <circle
-    cx="100"
-    cy="540"
-    r="210"
-    fill="${image.accent}"
-    opacity="0.38"
-  />
-
-  <rect
-    x="215"
-    y="95"
-    width="370"
-    height="345"
-    rx="70"
-    fill="#FFFFFF"
-    opacity="0.72"
-  />
-
   <text
-    x="400"
-    y="335"
+    x="80"
+    y="108"
     text-anchor="middle"
-    font-size="190"
+    font-size="108"
     font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif"
   >${image.emoji}</text>
-
-  <text
-    x="400"
-    y="515"
-    text-anchor="middle"
-    font-size="48"
-    font-weight="700"
-    fill="#27272A"
-    font-family="Arial, sans-serif"
-  >${escapeXml(image.label)}</text>
 </svg>
 `;
 }
@@ -164,16 +102,23 @@ const outputDirectory = path.join(
   "item-images"
 );
 
-await mkdir(outputDirectory, { recursive: true });
+await mkdir(outputDirectory, {
+  recursive: true,
+});
 
 await Promise.all(
   images.map((image) =>
     writeFile(
-      path.join(outputDirectory, `${image.slug}.svg`),
+      path.join(
+        outputDirectory,
+        `${image.slug}.svg`
+      ),
       createSvg(image),
       "utf8"
     )
   )
 );
 
-console.log(`Created ${images.length} item images.`);
+console.log(
+  `Created ${images.length} item images.`
+);

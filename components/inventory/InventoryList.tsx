@@ -71,7 +71,7 @@ export function InventoryList({
   }
 
   return (
-    <div className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {items.map((item) => (
         <InventoryItemCard
           key={item.id}

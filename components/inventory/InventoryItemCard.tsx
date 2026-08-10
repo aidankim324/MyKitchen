@@ -42,29 +42,82 @@ function formatDate(dateOnly: string) {
   }).format(date);
 }
 
-function getCategoryIcon(
+function getCategoryVisual(
   category: KitchenItem["category"]
 ) {
-  const icons: Partial<
-    Record<KitchenItem["category"], string>
+  const visuals: Partial<
+    Record<
+      KitchenItem["category"],
+      {
+        icon: string;
+        backgroundClasses: string;
+      }
+    >
   > = {
-    produce: "🥬",
-    dairy: "🥛",
-    meat: "🥩",
-    seafood: "🐟",
-    frozen: "❄️",
-    grains: "🌾",
-    canned_goods: "🥫",
-    snacks: "🍿",
-    beverages: "🥤",
-    condiments: "🫙",
-    spices: "🌶️",
-    baking: "🧁",
-    household: "🧻",
-    leftovers: "🍱",
+    produce: {
+      icon: "\u{1F96C}",
+      backgroundClasses: "bg-[#edf3e8]",
+    },
+    dairy: {
+      icon: "\u{1F95B}",
+      backgroundClasses: "bg-[#edf3f6]",
+    },
+    meat: {
+      icon: "\u{1F969}",
+      backgroundClasses: "bg-[#f5ece8]",
+    },
+    seafood: {
+      icon: "\u{1F41F}",
+      backgroundClasses: "bg-[#eaf2f3]",
+    },
+    frozen: {
+      icon: "\u{2744}\u{FE0F}",
+      backgroundClasses: "bg-[#edf4f7]",
+    },
+    grains: {
+      icon: "\u{1F33E}",
+      backgroundClasses: "bg-[#f3efe5]",
+    },
+    canned_goods: {
+      icon: "\u{1F96B}",
+      backgroundClasses: "bg-[#f2eee7]",
+    },
+    snacks: {
+      icon: "\u{1F37F}",
+      backgroundClasses: "bg-[#f5efe6]",
+    },
+    beverages: {
+      icon: "\u{1F964}",
+      backgroundClasses: "bg-[#edf2f3]",
+    },
+    condiments: {
+      icon: "\u{1FAD9}",
+      backgroundClasses: "bg-[#f3ede7]",
+    },
+    spices: {
+      icon: "\u{1F336}\u{FE0F}",
+      backgroundClasses: "bg-[#f5eee2]",
+    },
+    baking: {
+      icon: "\u{1F9C1}",
+      backgroundClasses: "bg-[#f4ece8]",
+    },
+    household: {
+      icon: "\u{1F9FB}",
+      backgroundClasses: "bg-[#eff1ed]",
+    },
+    leftovers: {
+      icon: "\u{1F371}",
+      backgroundClasses: "bg-[#f2eee8]",
+    },
   };
 
-  return icons[category] ?? "🍽️";
+  return (
+    visuals[category] ?? {
+      icon: "\u{1F37D}\u{FE0F}",
+      backgroundClasses: "bg-surface-subtle",
+    }
+  );
 }
 
 function getStatusDisplay(
@@ -125,36 +178,56 @@ export function InventoryItemCard({
   const suggestedImage =
     getSuggestedItemImage(item.name);
 
+  const categoryVisual =
+    getCategoryVisual(item.category);
+
   const titleId = `item-${item.id}-title`;
 
   return (
     <article
       aria-labelledby={titleId}
       className={[
-        "group overflow-hidden rounded-card border border-line bg-surface",
+        "group flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface",
         "shadow-soft transition duration-[var(--duration-standard)] ease-standard",
         "hover:-translate-y-px hover:border-line-strong hover:shadow-raised",
         "motion-reduce:transform-none motion-reduce:transition-none",
       ].join(" ")}
     >
-      <div className="relative flex h-36 items-center justify-center overflow-hidden bg-surface-subtle sm:h-40">
-        {suggestedImage ? (
-          <Image
-            src={suggestedImage.src}
-            alt=""
-            fill
-            unoptimized
-            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
-            className="object-cover transition-transform duration-[var(--duration-slow)] ease-standard group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none"
-          />
-        ) : (
-          <span
-            aria-hidden="true"
-            className="text-5xl transition-transform duration-[var(--duration-standard)] ease-standard group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
-          >
-            {getCategoryIcon(item.category)}
-          </span>
-        )}
+      <div
+        className={[
+          "relative flex h-36 shrink-0 items-center justify-center overflow-hidden sm:h-40",
+          categoryVisual.backgroundClasses,
+        ].join(" ")}
+      >
+        <span
+          aria-hidden="true"
+          className="absolute -right-8 -top-8 size-28 rounded-full bg-white/35"
+        />
+
+        <span
+          aria-hidden="true"
+          className="absolute -bottom-10 -left-8 size-32 rounded-full bg-white/30"
+        />
+
+        <div className="relative z-[1] flex size-20 items-center justify-center rounded-[1.35rem] bg-surface/75 shadow-soft transition-transform duration-[var(--duration-standard)] ease-standard group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none">
+          {suggestedImage ? (
+            <Image
+              src={suggestedImage.src}
+              alt=""
+              width={64}
+              height={64}
+              unoptimized
+              className="size-16 object-contain"
+            />
+          ) : (
+            <span
+              aria-hidden="true"
+              className="select-none text-5xl leading-none"
+            >
+              {categoryVisual.icon}
+            </span>
+          )}
+        </div>
 
         <span
           aria-label={`Expiration status: ${status.label}`}
@@ -173,7 +246,7 @@ export function InventoryItemCard({
         </span>
       </div>
 
-      <div className="p-4">
+      <div className="flex flex-1 flex-col p-4">
         <div className="min-w-0">
           <h2
             id={titleId}
@@ -226,43 +299,58 @@ export function InventoryItemCard({
         </div>
 
         <dl className="mt-4 grid gap-2 border-t border-line pt-3 text-xs">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex min-h-5 items-center justify-between gap-4">
             <dt className="text-muted">
               Bought
             </dt>
+
             <dd className="font-medium text-ink">
               {formatDate(item.dateBought)}
             </dd>
           </div>
 
-          {item.openedDate ? (
-            <div className="flex items-center justify-between gap-4">
-              <dt className="text-muted">
-                Opened
-              </dt>
-              <dd className="font-medium text-ink">
-                {formatDate(item.openedDate)}
-              </dd>
-            </div>
-          ) : null}
+          <div className="flex min-h-5 items-center justify-between gap-4">
+            <dt className="text-muted">
+              Opened
+            </dt>
 
-          {item.expirationDate ? (
-            <div className="flex items-center justify-between gap-4">
-              <dt className="text-muted">
-                Expires
-              </dt>
-              <dd className="font-medium text-ink">
-                {formatDate(
-                  item.expirationDate
-                )}
-              </dd>
-            </div>
-          ) : null}
+            <dd
+              className={
+                item.openedDate
+                  ? "font-medium text-ink"
+                  : "font-medium text-muted-light"
+              }
+            >
+              {item.openedDate
+                ? formatDate(item.openedDate)
+                : "Not set"}
+            </dd>
+          </div>
+
+          <div className="flex min-h-5 items-center justify-between gap-4">
+            <dt className="text-muted">
+              Expires
+            </dt>
+
+            <dd
+              className={
+                item.expirationDate
+                  ? "font-medium text-ink"
+                  : "font-medium text-muted-light"
+              }
+            >
+              {item.expirationDate
+                ? formatDate(
+                    item.expirationDate
+                  )
+                : "Not set"}
+            </dd>
+          </div>
         </dl>
 
         <div
           aria-label={`Actions for ${item.name}`}
-          className="mt-3 flex items-center justify-end gap-1 border-t border-line pt-2"
+          className="mt-auto flex items-center justify-end gap-1 border-t border-line pt-2"
         >
           <Link
             href={`/inventory/${item.id}/edit`}
