@@ -22,7 +22,7 @@ export default function AppLoading() {
     <main
       aria-busy="true"
       aria-label="Loading application"
-      className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8"
+      className="mx-auto max-w-[110rem] px-4 py-7 sm:px-6 lg:px-8"
     >
       <div className="space-y-3">
         <div className="h-9 w-48 animate-pulse rounded bg-gray-200" />

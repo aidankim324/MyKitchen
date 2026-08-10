@@ -19,7 +19,7 @@ export default async function InventoryPage() {
       : `${items.length} items`;
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-9 lg:px-8">
+    <main className="mx-auto max-w-[110rem] px-4 py-7 sm:px-6 sm:py-9 lg:px-8">
       <header className="mb-7 border-b border-line pb-6">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
           Kitchen overview
