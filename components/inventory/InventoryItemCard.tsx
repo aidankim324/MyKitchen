@@ -12,6 +12,7 @@ import type {
 type InventoryItemCardProps = {
   item: KitchenItem;
   today: string;
+  readOnly?: boolean;
 };
 
 function formatLabel(value: string) {
@@ -115,7 +116,8 @@ function getCategoryVisual(
   return (
     visuals[category] ?? {
       icon: "\u{1F37D}\u{FE0F}",
-      backgroundClasses: "bg-surface-subtle",
+      backgroundClasses:
+        "bg-surface-subtle",
     }
   );
 }
@@ -161,6 +163,7 @@ function getStatusDisplay(
 export function InventoryItemCard({
   item,
   today,
+  readOnly = false,
 }: InventoryItemCardProps) {
   const now = new Date(
     `${today}T00:00:00.000Z`
@@ -289,12 +292,14 @@ export function InventoryItemCard({
               </p>
             </div>
 
-            <QuickItemActions
-              itemId={item.id}
-              itemName={item.name}
-              quantity={item.quantity}
-              openedDate={item.openedDate}
-            />
+            {!readOnly ? (
+              <QuickItemActions
+                itemId={item.id}
+                itemName={item.name}
+                quantity={item.quantity}
+                openedDate={item.openedDate}
+              />
+            ) : null}
           </div>
         </div>
 
@@ -348,22 +353,24 @@ export function InventoryItemCard({
           </div>
         </dl>
 
-        <div
-          aria-label={`Actions for ${item.name}`}
-          className="mt-auto flex items-center justify-end gap-1 border-t border-line pt-2"
-        >
-          <Link
-            href={`/inventory/${item.id}/edit`}
-            className="inline-flex min-h-9 items-center rounded-control px-2.5 text-xs font-medium text-muted transition-colors duration-[var(--duration-fast)] ease-standard hover:bg-surface-subtle hover:text-ink"
+        {!readOnly ? (
+          <div
+            aria-label={`Actions for ${item.name}`}
+            className="mt-auto flex items-center justify-end gap-1 border-t border-line pt-2"
           >
-            Edit
-          </Link>
+            <Link
+              href={`/inventory/${item.id}/edit`}
+              className="inline-flex min-h-9 items-center rounded-control px-2.5 text-xs font-medium text-muted transition-colors duration-[var(--duration-fast)] ease-standard hover:bg-surface-subtle hover:text-ink"
+            >
+              Edit
+            </Link>
 
-          <DeleteItemButton
-            itemId={item.id}
-            itemName={item.name}
-          />
-        </div>
+            <DeleteItemButton
+              itemId={item.id}
+              itemName={item.name}
+            />
+          </div>
+        ) : null}
       </div>
     </article>
   );

@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import {
+  Show,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 
 export default function HomePage() {
   return (
@@ -10,21 +15,36 @@ export default function HomePage() {
         </Show>
       </div>
 
-      <h1 className="text-4xl font-bold tracking-tight">MyKitchen</h1>
-      <p className="mt-4 max-w-xl text-lg text-gray-600">
-        Track what is in your fridge, freezer, and pantry.
+      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-accent">
+        Home inventory
       </p>
 
-      <div className="mt-8 flex gap-3">
+      <h1 className="mt-3 text-4xl font-bold tracking-[-0.04em] text-ink sm:text-5xl">
+        MyKitchen
+      </h1>
+
+      <p className="mt-4 max-w-xl text-lg leading-8 text-muted">
+        Track what is in your fridge,
+        freezer, and pantry.
+      </p>
+
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <Link
+          href="/guest"
+          className="inline-flex min-h-11 items-center rounded-control border border-line bg-surface px-4 text-sm font-medium text-ink shadow-soft transition-colors duration-[var(--duration-fast)] ease-standard hover:border-line-strong hover:bg-surface-subtle"
+        >
+          View guest demo
+        </Link>
+
         <Show when="signed-out">
           <SignInButton>
-            <button className="rounded-md border px-4 py-2 text-sm font-medium">
+            <button className="inline-flex min-h-11 items-center rounded-control border border-line bg-surface px-4 text-sm font-medium text-muted shadow-soft transition-colors duration-[var(--duration-fast)] ease-standard hover:border-line-strong hover:text-ink">
               Sign in
             </button>
           </SignInButton>
 
           <SignUpButton>
-            <button className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white">
+            <button className="inline-flex min-h-11 items-center rounded-control bg-accent px-4 text-sm font-medium text-accent-foreground shadow-soft transition-colors duration-[var(--duration-fast)] ease-standard hover:bg-accent-hover">
               Create account
             </button>
           </SignUpButton>
@@ -33,7 +53,7 @@ export default function HomePage() {
         <Show when="signed-in">
           <Link
             href="/dashboard"
-            className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white"
+            className="inline-flex min-h-11 items-center rounded-control bg-accent px-4 text-sm font-medium text-accent-foreground shadow-soft transition-colors duration-[var(--duration-fast)] ease-standard hover:bg-accent-hover"
           >
             Go to dashboard
           </Link>

@@ -64,7 +64,6 @@
   --color-surface: var(--surface);
   --color-surface-subtle: var(--surface-subtle);
   --color-surface-muted: var(--surface-muted);
-
   --color-line: var(--border);
   --color-line-strong: var(--border-strong);
 
@@ -79,7 +78,6 @@
 
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
-
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
 
@@ -121,13 +119,6 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-button,
-input,
-select,
-textarea {
-  font: inherit;
 }
 
 button:not(:disabled),

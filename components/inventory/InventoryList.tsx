@@ -4,6 +4,7 @@ import type { KitchenItem } from "@/types/inventory";
 type InventoryListProps = {
   items: KitchenItem[];
   today: string;
+  readOnly?: boolean;
   emptyTitle?: string;
   emptyDescription?: string;
 };
@@ -11,6 +12,7 @@ type InventoryListProps = {
 export function InventoryList({
   items,
   today,
+  readOnly = false,
   emptyTitle = "No kitchen items",
   emptyDescription = "Add an item to begin tracking your kitchen.",
 }: InventoryListProps) {
@@ -77,6 +79,7 @@ export function InventoryList({
           key={item.id}
           item={item}
           today={today}
+          readOnly={readOnly}
         />
       ))}
     </div>
