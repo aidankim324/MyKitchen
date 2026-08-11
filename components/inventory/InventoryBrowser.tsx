@@ -97,6 +97,20 @@ function sortItems(
     sorted.sort(compareExpirationDates);
   }
 
+  if (sortBy === "storage_location") {
+    sorted.sort((first, second) => {
+      const locationDifference =
+        STORAGE_LOCATIONS.indexOf(first.storageLocation) -
+        STORAGE_LOCATIONS.indexOf(second.storageLocation);
+
+      if (locationDifference !== 0) {
+        return locationDifference;
+      }
+
+      return first.name.localeCompare(second.name);
+    });
+  }
+
   if (sortBy === "recently_added") {
     sorted.sort(
       (first, second) =>
@@ -406,6 +420,9 @@ export function InventoryBrowser({
             >
               <option value="recently_added">
                 Recently added
+              </option>
+              <option value="storage_location">
+                Storage area
               </option>
               <option value="date_bought">
                 Date bought

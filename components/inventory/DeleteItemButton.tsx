@@ -75,7 +75,7 @@ export function DeleteItemButton({
         type="button"
         onClick={handleDelete}
         disabled={isDeleting}
-        className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-red-700 transition hover:bg-red-50 hover:text-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex min-h-9 items-center rounded-control px-2.5 text-xs font-medium text-muted transition-colors duration-[var(--duration-fast)] ease-standard hover:bg-danger-soft hover:text-danger focus-visible:bg-danger-soft focus-visible:text-danger disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isDeleting
           ? "Deleting..."
@@ -85,7 +85,7 @@ export function DeleteItemButton({
       {error ? (
         <p
           role="alert"
-          className="mt-2 max-w-56 text-sm text-red-700"
+          className="mt-2 max-w-56 text-sm text-danger"
         >
           {error}
         </p>

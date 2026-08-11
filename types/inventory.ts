@@ -43,7 +43,7 @@ export type InventorySort =
   | "recently_added"
   | "date_bought"
   | "expiration_date"
-  | "name";
+  | "name" | "storage_location";
 
 export type InventoryFiltersState = {
   search: string;
