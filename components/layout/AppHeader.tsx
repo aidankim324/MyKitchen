@@ -82,8 +82,8 @@ export function AppHeader() {
       <header className="sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur-md">
         <div className="mx-auto flex min-h-16 max-w-[110rem] items-center gap-3 px-3 sm:gap-6 sm:px-6 lg:px-8">
           <Link
-            href="/dashboard"
-            aria-label="MyKitchen dashboard"
+            href="/"
+            aria-label="MyKitchen home"
             className="flex shrink-0 items-center gap-2.5 rounded-control"
           >
             <BrandMark />

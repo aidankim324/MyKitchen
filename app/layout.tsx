@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s | MyKitchen",
   },
   description:
-    "Track what is in your fridge, freezer, and pantry.",
+    "Track the contents of your fridge, freezer, and pantry.",
 };
 
 export default function RootLayout({
@@ -25,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={geist.variable}>
+      <html
+        lang="en"
+        className={geist.variable}
+      >
         <body>{children}</body>
       </html>
     </ClerkProvider>
