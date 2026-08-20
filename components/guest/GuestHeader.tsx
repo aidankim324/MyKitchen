@@ -35,8 +35,8 @@ export function GuestHeader() {
     <header className="sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur">
       <div className="mx-auto flex min-h-16 max-w-[110rem] items-center gap-3 px-3 sm:gap-6 sm:px-6 lg:px-8">
         <Link
-          href="/guest"
-          aria-label="MyKitchen guest dashboard"
+          href="/"
+          aria-label="MyKitchen home"
           className="flex shrink-0 items-center gap-2.5"
         >
           <span
