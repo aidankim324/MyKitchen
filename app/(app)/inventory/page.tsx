@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { InventoryBrowser } from "@/components/inventory/InventoryBrowser";
-import { formatUtcDateOnly } from "@/lib/dates";
 import { getKitchenItemsForUser } from "@/lib/items/queries";
+import { getRequestToday } from "@/lib/request-today";
 
 export default async function InventoryPage() {
   const { userId, redirectToSignIn } = await auth();
@@ -11,7 +11,7 @@ export default async function InventoryPage() {
   }
 
   const items = await getKitchenItemsForUser(userId);
-  const today = formatUtcDateOnly();
+  const today = await getRequestToday();
 
   return (
     <main className="mx-auto max-w-[110rem] px-4 py-7 sm:px-6 sm:py-9 lg:px-8">

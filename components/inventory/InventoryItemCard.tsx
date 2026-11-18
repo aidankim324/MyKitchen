@@ -165,14 +165,10 @@ export function InventoryItemCard({
   today,
   readOnly = false,
 }: InventoryItemCardProps) {
-  const now = new Date(
-    `${today}T00:00:00.000Z`
-  );
-
   const expirationStatus =
     getExpirationStatus(
       item.expirationDate,
-      now
+      today
     );
 
   const status =

@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  formatUtcDateOnly,
-  getExpirationStatus,
-} from "@/lib/dates";
+import { getExpirationStatus } from "@/lib/dates";
 import { getGuestInventory } from "@/lib/guest-inventory";
+import { getRequestToday } from "@/lib/request-today";
 import type {
   ExpirationStatus,
   KitchenItem,
@@ -77,12 +75,9 @@ function compareExpirationDates(
   );
 }
 
-export default function GuestDashboardPage() {
-  const today = formatUtcDateOnly();
+export default async function GuestDashboardPage() {
+  const today = await getRequestToday();
   const items = getGuestInventory(today);
-  const now = new Date(
-    `${today}T00:00:00.000Z`
-  );
 
   const fridgeCount = items.filter(
     (item) =>
@@ -104,7 +99,7 @@ export default function GuestDashboardPage() {
       item,
       status: getExpirationStatus(
         item.expirationDate,
-        now
+        today
       ),
     })
   );

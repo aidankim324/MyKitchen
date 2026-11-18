@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist } from "next/font/google";
+import { TimeZoneSync } from "@/components/layout/TimeZoneSync";
 import "./globals.css";
 
 const geist = Geist({
@@ -29,7 +30,10 @@ export default function RootLayout({
         lang="en"
         className={geist.variable}
       >
-        <body>{children}</body>
+        <body>
+          <TimeZoneSync />
+          {children}
+        </body>
       </html>
     </ClerkProvider>
   );

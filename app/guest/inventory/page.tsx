@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GuestInventoryBrowser } from "@/components/guest/GuestInventoryBrowser";
-import { formatUtcDateOnly } from "@/lib/dates";
 import { getGuestInventory } from "@/lib/guest-inventory";
+import { getRequestToday } from "@/lib/request-today";
 
 export const dynamic = "force-dynamic";
 
@@ -12,8 +12,8 @@ export const metadata: Metadata = {
     "Explore a read-only sample MyKitchen inventory.",
 };
 
-export default function GuestInventoryPage() {
-  const today = formatUtcDateOnly();
+export default async function GuestInventoryPage() {
+  const today = await getRequestToday();
   const items = getGuestInventory(today);
 
   return (

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { getBrowserToday } from "@/lib/dates";
 
 type PendingAction =
   | "increase"
@@ -15,19 +16,6 @@ type QuickItemActionsProps = {
   quantity: number;
   openedDate: string | null;
 };
-
-function getTodayDateOnly() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(
-    now.getMonth() + 1
-  ).padStart(2, "0");
-  const day = String(
-    now.getDate()
-  ).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
 
 function LoadingIndicator() {
   return (
@@ -135,7 +123,7 @@ export function QuickItemActions({
 
   function markOpened() {
     void updateItem("mark_opened", {
-      openedDate: getTodayDateOnly(),
+      openedDate: getBrowserToday(),
     });
   }
 

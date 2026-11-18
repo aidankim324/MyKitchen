@@ -125,7 +125,7 @@ function sortItems(
 function filterItems(
   items: KitchenItem[],
   filters: InventoryFiltersState,
-  now: Date
+  today: string
 ) {
   const search = filters.search
     .trim()
@@ -148,7 +148,7 @@ function filterItems(
     const expirationStatus =
       getExpirationStatus(
         item.expirationDate,
-        now
+        today
       );
 
     const matchesExpiration =
@@ -212,19 +212,13 @@ export function InventoryBrowser({
   const [showFilters, setShowFilters] =
     useState(false);
 
-  const now = useMemo(
-    () =>
-      new Date(`${today}T00:00:00.000Z`),
-    [today]
-  );
-
   const visibleItems = useMemo(
     () =>
       sortItems(
-        filterItems(items, filters, now),
+        filterItems(items, filters, today),
         filters.sortBy
       ),
-    [items, filters, now]
+    [items, filters, today]
   );
 
   const locationCounts = useMemo<

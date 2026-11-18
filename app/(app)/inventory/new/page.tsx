@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { ItemForm } from "@/components/inventory/ItemForm";
+import { getRequestToday } from "@/lib/request-today";
 
-export default function NewInventoryItemPage() {
+export default async function NewInventoryItemPage() {
+  const today = await getRequestToday();
+
   return (
     <main className="mx-auto max-w-2xl p-6">
       <div className="mb-6">
@@ -15,7 +18,7 @@ export default function NewInventoryItemPage() {
         </p>
       </div>
 
-      <ItemForm mode="create" />
+      <ItemForm mode="create" today={today} />
     </main>
   );
 }

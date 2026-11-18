@@ -8,7 +8,7 @@ export function isDateOnlyString(value: string): boolean {
 }
 
 export function formatUtcDateOnly(
-  date: Date = new Date()
+  date: Date
 ): string {
   const year = date.getUTCFullYear();
   const month = String(
@@ -52,18 +52,64 @@ export function dateOnlyToUtcDayNumber(
   return Math.floor(utcMs / MS_PER_DAY);
 }
 
+export const TIME_ZONE_COOKIE = "mykitchen_tz";
+
+const FALLBACK_TIME_ZONE = "UTC";
+
+function resolveTimeZone(
+  timeZone: string | undefined
+): string {
+  if (!timeZone) {
+    return FALLBACK_TIME_ZONE;
+  }
+
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone });
+    return timeZone;
+  } catch {
+    return FALLBACK_TIME_ZONE;
+  }
+}
+
+// The calendar date at `date` in `timeZone`. A missing or invalid time zone
+// falls back to UTC.
+export function formatDateOnlyInTimeZone(
+  date: Date,
+  timeZone: string | undefined
+): string {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: resolveTimeZone(timeZone),
+    calendar: "gregory",
+    numberingSystem: "latn",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((entry) => entry.type === type)?.value ?? "";
+
+  return `${part("year").padStart(4, "0")}-${part("month")}-${part("day")}`;
+}
+
+// For click-time actions in the browser, such as marking an item opened.
+export function getBrowserToday(): string {
+  return formatDateOnlyInTimeZone(
+    new Date(),
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  );
+}
+
 export function getExpirationStatus(
   expirationDate: string | null | undefined,
-  now: Date = new Date()
+  today: string
 ): ExpirationStatus {
   if (!expirationDate) {
     return "no_date";
   }
 
-  const todayDateOnly = formatUtcDateOnly(now);
-
   const todayDayNumber =
-    dateOnlyToUtcDayNumber(todayDateOnly);
+    dateOnlyToUtcDayNumber(today);
 
   const expirationDayNumber =
     dateOnlyToUtcDayNumber(expirationDate);

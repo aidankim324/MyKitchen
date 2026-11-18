@@ -199,6 +199,7 @@ All item routes require authentication and enforce record ownership.
 The unit-test suite covers:
 
 - UTC date-only conversion and validation
+- Time-zone-aware "today" (fallback, DST, cookie handling)
 - Expiration-status calculation
 - Leap years and invalid calendar dates
 - Item-image suggestion rules
@@ -220,10 +221,10 @@ TEST_DATABASE_URL=postgresql://... npm test
 Current results (without `TEST_DATABASE_URL`):
 
 ```text
-Test files: 6 passed, 1 skipped
-Tests:      60 passed, 6 skipped
+Test files: 7 passed, 1 skipped
+Tests:      78 passed, 6 skipped
 Statements: 100%
-Branches:   97.22%
+Branches:   94.73%
 Functions:  100%
 Lines:      100%
 ```
@@ -329,9 +330,10 @@ lib/
   api/                      Shared API error responses
   items/                    Inventory queries and serializers
   generated/prisma/         Generated locally and ignored by Git
-  dates.ts                  UTC date-only utilities
+  dates.ts                  Date-only and time-zone utilities
   item-images.ts            Suggested-image resolver
   prisma.ts                 Prisma Client configuration
+  request-today.ts          The user's calendar date for a server request
 
 prisma/
   schema.prisma             Database schema
@@ -344,6 +346,7 @@ tests/
   item-route.test.ts
   item-serializers.test.ts
   item-validation.test.ts
+  request-today.test.ts
 
 validations/
   item.ts                   Request and form schemas

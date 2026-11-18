@@ -295,6 +295,24 @@ expirationDate
 
 These values represent calendar dates rather than specific moments in time. Date-only helpers use UTC components to avoid accidental date changes caused by local time zones.
 
+### The user's "today"
+
+"Today" is the user's calendar date, not the server's UTC date.
+
+- `TimeZoneSync` (rendered in the root layout) stores the browser's IANA time zone in the
+  `mykitchen_tz` cookie (`Path=/`, `SameSite=Lax`, one year, `Secure` on HTTPS). When it stores a new
+  or changed value, it calls `router.refresh()` once. If cookies are blocked, it does nothing more.
+- Server pages call `getRequestToday()` (`lib/request-today.ts`), which formats the current instant
+  in that time zone with `formatDateOnlyInTimeZone()`. A missing or invalid time zone falls back to
+  UTC. The page passes the resulting `YYYY-MM-DD` string to client components, so server and client
+  render the same date.
+- Click-time actions such as marking an item opened use `getBrowserToday()`.
+- The Add Item form takes its default bought date from the page's `today`. If that value changes
+  after the first refresh, an untouched default follows it; a date the user entered is kept.
+
+Known limitations: a first visit without the cookie renders with the UTC date and then refreshes
+once. A tab left open past midnight keeps the previous `today` until the next navigation or refresh.
+
 ## Expiration Status
 
 Expiration status is derived at request or render time:
@@ -380,6 +398,7 @@ A formal assistive-technology audit remains outside the current MVP scope.
 Vitest covers the application's isolated business logic:
 
 - Date-only parsing and conversion
+- Time-zone-aware "today": fallback, DST transitions, and cookie handling
 - Expiration-state boundaries
 - Leap-year and invalid-date behavior
 - Image suggestion rules
@@ -395,9 +414,9 @@ decrements; and the zero floor. It is skipped otherwise.
 Current test results (without `TEST_DATABASE_URL`):
 
 ```text
-60 tests passing, 6 skipped
+78 tests passing, 6 skipped
 100% statement coverage
-97.22% branch coverage
+94.73% branch coverage
 100% function coverage
 100% line coverage
 ```

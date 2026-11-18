@@ -1,8 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   dateOnlyToPrismaDate,
   dateOnlyToUtcDayNumber,
+  formatDateOnlyInTimeZone,
   formatUtcDateOnly,
+  getBrowserToday,
   getExpirationStatus,
   isDateOnlyString,
   prismaDateToDateOnly,
@@ -103,9 +105,7 @@ describe("dateOnlyToUtcDayNumber", () => {
 });
 
 describe("getExpirationStatus", () => {
-  const today = new Date(
-    "2026-07-27T00:00:00.000Z"
-  );
+  const today = "2026-07-27";
 
   it("returns no_date for null", () => {
     expect(
@@ -210,5 +210,143 @@ describe("prismaDateToDateOnly", () => {
     expect(
       prismaDateToDateOnly(null)
     ).toBeNull();
+  });
+});
+
+describe("formatDateOnlyInTimeZone", () => {
+  // 7:30 PM on November 17 in Los Angeles.
+  const evening = new Date("2026-11-18T03:30:00.000Z");
+
+  it("uses the calendar date in the given time zone", () => {
+    expect(
+      formatDateOnlyInTimeZone(evening, "America/Los_Angeles")
+    ).toBe("2026-11-17");
+
+    expect(formatDateOnlyInTimeZone(evening, "UTC")).toBe(
+      "2026-11-18"
+    );
+
+    expect(formatDateOnlyInTimeZone(evening, "Asia/Tokyo")).toBe(
+      "2026-11-18"
+    );
+  });
+
+  it("handles time zones ahead of UTC across midnight", () => {
+    // 11:30 PM UTC on December 31 is already January 1 in Tokyo.
+    expect(
+      formatDateOnlyInTimeZone(
+        new Date("2026-12-31T23:30:00.000Z"),
+        "Asia/Tokyo"
+      )
+    ).toBe("2027-01-01");
+  });
+
+  it("follows daylight saving time transitions", () => {
+    // DST ends 2026-11-01 at 2:00 AM PDT (09:00 UTC); 1:30 AM repeats.
+    expect(
+      formatDateOnlyInTimeZone(
+        new Date("2026-11-01T06:59:00.000Z"),
+        "America/Los_Angeles"
+      )
+    ).toBe("2026-10-31");
+
+    expect(
+      formatDateOnlyInTimeZone(
+        new Date("2026-11-01T07:00:00.000Z"),
+        "America/Los_Angeles"
+      )
+    ).toBe("2026-11-01");
+
+    // Midnight after DST ends is 08:00 UTC, not 07:00.
+    expect(
+      formatDateOnlyInTimeZone(
+        new Date("2026-11-02T07:59:00.000Z"),
+        "America/Los_Angeles"
+      )
+    ).toBe("2026-11-01");
+
+    // DST starts 2026-03-08; midnight on March 9 is 07:00 UTC.
+    expect(
+      formatDateOnlyInTimeZone(
+        new Date("2026-03-09T06:59:00.000Z"),
+        "America/Los_Angeles"
+      )
+    ).toBe("2026-03-08");
+
+    expect(
+      formatDateOnlyInTimeZone(
+        new Date("2026-03-09T07:00:00.000Z"),
+        "America/Los_Angeles"
+      )
+    ).toBe("2026-03-09");
+  });
+
+  it.each([undefined, "", "Not/AZone", "UTC; Path=/", "x".repeat(500)])(
+    "falls back to UTC for %j",
+    (timeZone) => {
+      expect(formatDateOnlyInTimeZone(evening, timeZone)).toBe(
+        "2026-11-18"
+      );
+    }
+  );
+
+  it("pads single-digit months and days", () => {
+    expect(
+      formatDateOnlyInTimeZone(
+        new Date("2026-03-05T12:00:00.000Z"),
+        "America/New_York"
+      )
+    ).toBe("2026-03-05");
+  });
+});
+
+describe("expiration status with a time-zone-derived today", () => {
+  const evening = new Date("2026-11-18T03:30:00.000Z");
+  const losAngelesToday = formatDateOnlyInTimeZone(
+    evening,
+    "America/Los_Angeles"
+  );
+
+  it("treats an item expiring today as expiring_soon, not expired", () => {
+    expect(getExpirationStatus("2026-11-17", losAngelesToday)).toBe(
+      "expiring_soon"
+    );
+
+    // The UTC date would already call it expired.
+    expect(
+      getExpirationStatus(
+        "2026-11-17",
+        formatDateOnlyInTimeZone(evening, "UTC")
+      )
+    ).toBe("expired");
+  });
+
+  it("keeps the seven-day window anchored to the local date", () => {
+    expect(getExpirationStatus("2026-11-24", losAngelesToday)).toBe(
+      "expiring_soon"
+    );
+    expect(getExpirationStatus("2026-11-25", losAngelesToday)).toBe(
+      "fresh"
+    );
+    expect(getExpirationStatus("2026-11-16", losAngelesToday)).toBe(
+      "expired"
+    );
+  });
+});
+
+describe("getBrowserToday", () => {
+  const originalTimeZone = process.env.TZ;
+
+  afterEach(() => {
+    vi.useRealTimers();
+    process.env.TZ = originalTimeZone;
+  });
+
+  it("uses the runtime's own time zone", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-18T03:30:00.000Z"));
+    process.env.TZ = "America/Los_Angeles";
+
+    expect(getBrowserToday()).toBe("2026-11-17");
   });
 });

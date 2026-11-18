@@ -18,10 +18,12 @@ type FieldErrors = Record<string, string[] | undefined>;
 type ItemFormProps =
   | {
       mode: "create";
+      today: string;
       initialItem?: never;
     }
   | {
       mode: "edit";
+      today?: never;
       initialItem: KitchenItem;
     };
 
@@ -36,15 +38,6 @@ type FormValues = {
   expirationDate: string;
   notes: string;
 };
-
-function getTodayDateOnly() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
 
 function formatLabel(value: string) {
   return value
@@ -149,6 +142,7 @@ function validateDateOrder(
 
 export function ItemForm({
   mode,
+  today,
   initialItem,
 }: ItemFormProps) {
   const router = useRouter();
@@ -174,12 +168,32 @@ export function ItemForm({
         : "1",
       unit: initialItem?.unit ?? "count",
       dateBought:
-        initialItem?.dateBought ?? getTodayDateOnly(),
+        mode === "edit" ? initialItem.dateBought : today,
       openedDate: initialItem?.openedDate ?? "",
       expirationDate:
         initialItem?.expirationDate ?? "",
       notes: initialItem?.notes ?? "",
     });
+
+  // `today` changes once TimeZoneSync stores the browser's time zone and
+  // refreshes the page. router.refresh() keeps this form's state, so move a
+  // bought date the user hasn't edited to the corrected day.
+  const [defaultDateBought, setDefaultDateBought] =
+    useState(today);
+
+  const [isDateBoughtEdited, setIsDateBoughtEdited] =
+    useState(false);
+
+  if (today !== defaultDateBought) {
+    setDefaultDateBought(today);
+
+    if (today && !isDateBoughtEdited) {
+      setFormValues((current) => ({
+        ...current,
+        dateBought: today,
+      }));
+    }
+  }
 
   const suggestedImage = useMemo(
     () => getSuggestedItemImage(formValues.name),
@@ -681,12 +695,13 @@ export function ItemForm({
               name="dateBought"
               type="date"
               value={formValues.dateBought}
-              onChange={(event) =>
+              onChange={(event) => {
+                setIsDateBoughtEdited(true);
                 updateField(
                   "dateBought",
                   event.target.value
-                )
-              }
+                );
+              }}
               aria-invalid={dateBoughtError}
               aria-describedby={
                 dateBoughtError

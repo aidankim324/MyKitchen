@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
-import {
-  formatUtcDateOnly,
-  getExpirationStatus,
-} from "@/lib/dates";
+import { getExpirationStatus } from "@/lib/dates";
 import { getKitchenItemsForUser } from "@/lib/items/queries";
+import { getRequestToday } from "@/lib/request-today";
 import type {
   ExpirationStatus,
   KitchenItem,
@@ -95,10 +93,7 @@ export default async function DashboardPage() {
   const items =
     await getKitchenItemsForUser(userId);
 
-  const today = formatUtcDateOnly();
-  const now = new Date(
-    `${today}T00:00:00.000Z`
-  );
+  const today = await getRequestToday();
 
   const fridgeCount = items.filter(
     (item) =>
@@ -135,7 +130,7 @@ export default async function DashboardPage() {
       item,
       status: getExpirationStatus(
         item.expirationDate,
-        now
+        today
       ),
     })
   );
