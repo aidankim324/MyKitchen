@@ -5,8 +5,10 @@ TypeScript, Tailwind CSS 4, Clerk, Prisma 7 (`@prisma/adapter-pg`) on Supabase P
 Vitest. Deployed on Vercel. It is also a portfolio project, so code should read as deliberate and
 maintainable, not generated.
 
-**The repository is the source of truth.** If this file, `docs/ARCHITECTURE.md`, or any handoff note
-disagrees with the code or git history, trust the code and flag the discrepancy.
+The repository and git history establish current implementation and delivery state. This file
+defines required engineering constraints and intended behavior. If they disagree, flag the
+discrepancy; do not treat an existing bug as permission to violate a requirement. Fix it only within
+the authorized task.
 
 ## Before changing anything
 
@@ -15,6 +17,11 @@ disagrees with the code or git history, trust the code and flag the discrepancy.
 - Read the files you're about to change and the helpers they use. Reuse what exists before
   creating anything new.
 - Make the narrowest change that solves the task. No drive-by refactors, renames, or reformatting.
+- Preserve pre-existing local changes. Do not discard, overwrite, or include unrelated work in a
+  commit.
+- Honor explicit review checkpoints before committing, pushing, or starting the next phase. If
+  environment automation conflicts with a checkpoint, disclose the conflict before taking that
+  action.
 
 ## Commands
 
@@ -26,8 +33,10 @@ disagrees with the code or git history, trust the code and flag the discrepancy.
 
 ## Security invariants (never weaken these)
 
-- Every private inventory read or mutation is scoped by **both** item `id` and the Clerk `userId`.
-  The owner condition belongs **in the query or mutation itself**, not in a separate pre-check.
+- Scope every private inventory read to the authenticated Clerk `userId`. For individual-item
+  reads, updates, and deletes, also filter by item `id`. Updates and deletes must include ownership
+  in the database mutation itself, rather than relying on a separate authorization pre-check. On
+  creation, derive `userId` from server-side authentication, never the request payload.
 - Server-side Zod validation (`validations/item.ts`) is authoritative. Client validation exists only
   for UX. Never trust client-supplied IDs, enum values, or computed state.
 - Never print, log, commit, or paste secrets (Clerk keys, `DATABASE_URL`, Vercel env). Use
@@ -41,15 +50,17 @@ disagrees with the code or git history, trust the code and flag the discrepancy.
 
 ## Data model and domain rules
 
-- Prisma schema: `prisma/schema.prisma`. Change it only through migrations in `prisma/migrations/`.
-  Never alter the live database by hand, because the schema would drift from the migrations.
-- `id` uses `@default(uuid())`, which Prisma generates on the **client**. There is no database
-  default. Any raw SQL insert must supply an ID explicitly. Prefer the Prisma client for scripts.
+- For database schema changes, update `prisma/schema.prisma` and generate, review, and commit the
+  corresponding migration. Apply it through the project's migration workflow; do not manually alter
+  the live schema.
+- The documented schema and migrations use Prisma-generated UUIDs rather than a database UUID
+  default. Raw SQL inserts should supply IDs explicitly; prefer the Prisma client for scripts.
+  Verify the live schema before diagnosing drift, and do not assume a previous repair script ran.
 - Enum lists (locations, categories, units) live in `validations/item.ts` and the Prisma schema.
   Import them; don't copy them.
 - Storage display order is always Fridge, Freezer, Pantry.
 
-## Dates
+## Required date semantics
 
 - Food dates are **calendar dates** (`YYYY-MM-DD`), stored as Postgres `DATE`.
 - "Today" means the user's calendar date, not the UTC date.
