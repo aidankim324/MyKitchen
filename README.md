@@ -205,16 +205,27 @@ The unit-test suite covers:
 - Zod create and update validation
 - Prisma-to-application serialization
 - Null optional fields and quantity conversion
+- Owner-scoped update and quantity-adjustment queries (mocked Prisma)
+- `PATCH /api/items/[id]` authentication, validation, and not-found handling
 
-Current results:
+Optional Postgres tests (`tests/item-mutations.db.test.ts`) check cross-user mutation attempts,
+concurrent quantity adjustments, and the zero floor against a real database. They run only when
+`TEST_DATABASE_URL` points to a disposable database with migrations applied:
+
+```bash
+DIRECT_URL="$TEST_DATABASE_URL" npx prisma migrate deploy
+TEST_DATABASE_URL=postgresql://... npm test
+```
+
+Current results (without `TEST_DATABASE_URL`):
 
 ```text
-Test files: 4 passed
-Tests:      39 passed
-Statements: 98.48%
-Branches:   97.05%
-Functions:  93.33%
-Lines:      98.46%
+Test files: 6 passed, 1 skipped
+Tests:      60 passed, 6 skipped
+Statements: 100%
+Branches:   97.22%
+Functions:  100%
+Lines:      100%
 ```
 
 Run the complete quality gate:
@@ -328,6 +339,9 @@ prisma/
 tests/
   dates.test.ts
   item-images.test.ts
+  item-mutations.db.test.ts
+  item-queries.test.ts
+  item-route.test.ts
   item-serializers.test.ts
   item-validation.test.ts
 
@@ -337,10 +351,9 @@ validations/
 
 ## Current Limitations
 
-- Quantity quick actions send an absolute value rather than an atomic database increment.
 - Images are selected from a local static catalog rather than uploaded by users.
 - Barcode and receipt imports are not implemented.
-- API integration and browser end-to-end tests are still planned.
+- Route tests use mocked auth and queries; browser end-to-end tests are still planned.
 - Production monitoring currently relies on Vercel runtime logs.
 
 ## Roadmap
@@ -353,7 +366,5 @@ Potential future work includes:
 - Bulk review of imported item drafts
 - User-uploaded images
 - Recipe suggestions based on available inventory
-- Atomic quantity updates
-- API integration tests
 - End-to-end authentication and CRUD tests
 - Dedicated error monitoring

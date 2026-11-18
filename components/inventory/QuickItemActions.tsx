@@ -29,18 +29,6 @@ function getTodayDateOnly() {
   return `${year}-${month}-${day}`;
 }
 
-function calculateQuantity(
-  quantity: number,
-  change: number
-) {
-  const nextQuantity = quantity + change;
-
-  return Math.max(
-    0,
-    Number(nextQuantity.toFixed(2))
-  );
-}
-
 function LoadingIndicator() {
   return (
     <svg
@@ -135,16 +123,13 @@ export function QuickItemActions({
   }
 
   function changeQuantity(change: number) {
-    const nextQuantity =
-      calculateQuantity(quantity, change);
-
     const action =
       change > 0
         ? "increase"
         : "decrease";
 
     void updateItem(action, {
-      quantity: nextQuantity,
+      quantityChange: change,
     });
   }
 

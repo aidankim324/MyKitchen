@@ -1,4 +1,4 @@
-import type { Prisma } from "@/lib/generated/prisma/client";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { dateOnlyToPrismaDate } from "@/lib/dates";
 import { serializeKitchenItem } from "@/lib/items/serializers";
@@ -123,28 +123,48 @@ export async function updateKitchenItemForUser(
   userId: string,
   input: UpdateKitchenItemInput
 ): Promise<KitchenItem | null> {
-  const existingItem = await prisma.kitchenItem.findFirst({
-    where: {
-      id,
-      userId,
-    },
-    select: {
-      id: true,
-    },
-  });
+  try {
+    const updatedItem = await prisma.kitchenItem.update({
+      where: {
+        id,
+        userId,
+      },
+      data: buildKitchenItemUpdateData(input),
+    });
 
-  if (!existingItem) {
+    return serializeKitchenItem(updatedItem);
+  } catch (error) {
+    // P2025: no record matched both the id and the owner.
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+// A single SQL statement so concurrent adjustments can't overwrite each
+// other. Prisma's `increment` can't express the clamp at zero.
+export async function adjustKitchenItemQuantityForUser(
+  id: string,
+  userId: string,
+  quantityChange: number
+): Promise<KitchenItem | null> {
+  const updatedCount = await prisma.$executeRaw`
+    UPDATE "kitchen_items"
+    SET "quantity" = GREATEST("quantity" + ${quantityChange}::numeric, 0),
+        "updated_at" = NOW()
+    WHERE "id" = ${id}::uuid AND "user_id" = ${userId}
+  `;
+
+  if (updatedCount === 0) {
     return null;
   }
 
-  const updatedItem = await prisma.kitchenItem.update({
-    where: {
-      id,
-    },
-    data: buildKitchenItemUpdateData(input),
-  });
-
-  return serializeKitchenItem(updatedItem);
+  return getKitchenItemForUser(id, userId);
 }
 
 export async function deleteKitchenItemForUser(

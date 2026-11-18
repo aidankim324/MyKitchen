@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import {
+  adjustKitchenItemQuantityForUser,
   deleteKitchenItemForUser,
   getKitchenItemForUser,
   updateKitchenItemForUser,
@@ -110,11 +111,18 @@ export async function PATCH(request: Request, { params }: RouteContext) {
       );
     }
 
-    const item = await updateKitchenItemForUser(
-      validated.id,
-      userId,
-      parsed.data
-    );
+    const item =
+      parsed.data.quantityChange !== undefined
+        ? await adjustKitchenItemQuantityForUser(
+            validated.id,
+            userId,
+            parsed.data.quantityChange
+          )
+        : await updateKitchenItemForUser(
+            validated.id,
+            userId,
+            parsed.data
+          );
 
     if (!item) {
       return notFoundResponse();

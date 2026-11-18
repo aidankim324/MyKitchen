@@ -138,6 +138,12 @@ export const updateKitchenItemSchema = z
       .min(0, "Quantity cannot be negative.")
       .optional(),
 
+    quantityChange: z
+      .number()
+      .finite("Quantity change must be a valid number.")
+      .refine((value) => value !== 0, "Quantity change cannot be zero.")
+      .optional(),
+
     unit: z.enum(UNITS).optional(),
 
 dateBought: dateOnlySchema.optional(),
@@ -164,7 +170,15 @@ expirationDate: z.preprocess(
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field must be provided.",
-  });
+  })
+  .refine(
+    (data) =>
+      data.quantityChange === undefined || Object.keys(data).length === 1,
+    {
+      message: "Quantity change cannot be combined with other fields.",
+      path: ["quantityChange"],
+    }
+  );
 
 export const kitchenItemFormSchema = createKitchenItemSchema.extend({
   quantity: z

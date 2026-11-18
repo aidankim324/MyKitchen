@@ -255,25 +255,29 @@ The MVP uses server-confirmed updates rather than optimistic updates.
 
 This avoids showing a successful change before the database confirms it and keeps failure recovery straightforward.
 
-## Current Concurrency Limitation
+## Quantity Adjustments
 
-Quick quantity actions calculate an absolute value in the browser:
+Quick quantity actions send a relative change rather than an absolute value:
 
 ```text
-Current quantity: 2
 User clicks +
-Request body: { quantity: 3 }
+Request body: { quantityChange: 1 }
 ```
 
-If two devices update the same item simultaneously, the later request could overwrite the earlier request.
+`quantityChange` must be a finite, non-zero number and cannot be combined with other fields. The
+server applies it in one owner-scoped SQL statement:
 
-For a personal inventory MVP, this tradeoff is acceptable.
+```sql
+UPDATE kitchen_items
+SET quantity = GREATEST(quantity + $change, 0), updated_at = NOW()
+WHERE id = $id AND user_id = $userId
+```
 
-A future implementation could use:
+Concurrent adjustments from several tabs or devices therefore all apply, and the quantity never
+drops below zero. Prisma's `increment` cannot express the zero floor, so this one query uses
+`$executeRaw`.
 
-- Atomic database increments
-- Version numbers
-- Optimistic concurrency control
+Full-form edits still send absolute values, so the last saved edit wins.
 
 ## Date Model
 
@@ -381,15 +385,21 @@ Vitest covers the application's isolated business logic:
 - Image suggestion rules
 - Zod validation
 - Inventory serialization
+- Owner-scoped update and quantity-adjustment queries (mocked Prisma)
+- Item `PATCH` route authentication, validation, and not-found handling (mocked auth and queries)
 
-Current test results:
+`tests/item-mutations.db.test.ts` runs against a real Postgres database when `TEST_DATABASE_URL` is
+set. It checks cross-user update, adjustment, and delete attempts; concurrent increments and
+decrements; and the zero floor. It is skipped otherwise.
+
+Current test results (without `TEST_DATABASE_URL`):
 
 ```text
-39 tests passing
-98.48% statement coverage
-97.05% branch coverage
-93.33% function coverage
-98.46% line coverage
+60 tests passing, 6 skipped
+100% statement coverage
+97.22% branch coverage
+100% function coverage
+100% line coverage
 ```
 
 The complete local quality gate is:

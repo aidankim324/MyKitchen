@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { kitchenItemFormSchema } from "@/validations/item";
+import {
+  kitchenItemFormSchema,
+  updateKitchenItemSchema,
+} from "@/validations/item";
 
 function createValidFormValues() {
   return {
@@ -107,5 +110,49 @@ describe("kitchenItemFormSchema", () => {
         result.error.flatten().fieldErrors.dateBought
       ).toBeDefined();
     }
+  });
+});
+
+describe("updateKitchenItemSchema quantityChange", () => {
+  it("accepts positive and negative adjustments", () => {
+    expect(
+      updateKitchenItemSchema.safeParse({ quantityChange: 1 }).success
+    ).toBe(true);
+
+    expect(
+      updateKitchenItemSchema.safeParse({ quantityChange: -0.5 }).success
+    ).toBe(true);
+  });
+
+  it.each([0, Number.NaN, Number.POSITIVE_INFINITY, "1"])(
+    "rejects %s",
+    (quantityChange) => {
+      const result = updateKitchenItemSchema.safeParse({ quantityChange });
+
+      expect(result.success).toBe(false);
+    }
+  );
+
+  it("cannot be combined with other fields", () => {
+    const result = updateKitchenItemSchema.safeParse({
+      quantityChange: 1,
+      quantity: 5,
+    });
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(
+        result.error.flatten().fieldErrors.quantityChange
+      ).toEqual([
+        "Quantity change cannot be combined with other fields.",
+      ]);
+    }
+  });
+
+  it("still rejects a negative absolute quantity", () => {
+    expect(
+      updateKitchenItemSchema.safeParse({ quantity: -1 }).success
+    ).toBe(false);
   });
 });
