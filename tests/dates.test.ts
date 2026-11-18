@@ -339,7 +339,13 @@ describe("getBrowserToday", () => {
 
   afterEach(() => {
     vi.useRealTimers();
-    process.env.TZ = originalTimeZone;
+
+    // Assigning undefined would store the string "undefined".
+    if (originalTimeZone === undefined) {
+      delete process.env.TZ;
+    } else {
+      process.env.TZ = originalTimeZone;
+    }
   });
 
   it("uses the runtime's own time zone", () => {

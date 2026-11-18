@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: mykitchen_ci
+          POSTGRES_PASSWORD: mykitchen_ci
+          POSTGRES_DB: mykitchen_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U mykitchen_ci -d mykitchen_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    # Every URL points at the disposable service database above.
+    # DIRECT_URL is read by prisma.config.ts, including during npm ci's
+    # postinstall `prisma generate`. TEST_DATABASE_URL enables the Postgres
+    # tests, which fail instead of skipping when CI is set without it.
+    env:
+      DATABASE_URL: postgresql://mykitchen_ci:mykitchen_ci@localhost:5432/mykitchen_ci
+      DIRECT_URL: postgresql://mykitchen_ci:mykitchen_ci@localhost:5432/mykitchen_ci
+      TEST_DATABASE_URL: postgresql://mykitchen_ci:mykitchen_ci@localhost:5432/mykitchen_ci
+      NEXT_TELEMETRY_DISABLED: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Apply migrations to the CI database
+        run: npm run prisma:deploy
+
+      - run: npm run check

@@ -8,6 +8,11 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const testDatabaseUrl = process.env.TEST_DATABASE_URL;
 
+// Skipping is fine locally, but CI must never pass without running these.
+if (process.env.CI && !testDatabaseUrl) {
+  throw new Error("TEST_DATABASE_URL must be set when CI is set.");
+}
+
 describe.skipIf(!testDatabaseUrl)("item mutations against Postgres", () => {
   const ownerId = `test_owner_${randomUUID()}`;
   const otherUserId = `test_other_${randomUUID()}`;
